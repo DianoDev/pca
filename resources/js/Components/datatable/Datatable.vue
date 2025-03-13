@@ -1,18 +1,18 @@
 <template>
-    <div class="dataTables_wrapper dt-bootstrap4 no-footer">
+    <div class="relative">
         <table-loading v-if="loading"></table-loading>
         <slot>
             <div v-if="checkboxEnabled" class="text-center">
-                <h3 class="text-gray-400 fw-bold">Selected {{selection.selected}} of {{selection.total}} item(s)</h3>
+                <h3 class="text-gray-400 font-bold">Selected {{selection.selected}} of {{selection.total}} item(s)</h3>
             </div>
         </slot>
-        <table class="table table-responsive table-hover" :id="`table-${id}`">
+        <table class="min-w-full divide-y divide-gray-200 hover:table" :id="`table-${id}`">
             <table-header v-if="params" :columns="columns" :table="id" :params="params" @sort="sort" @toggle-all="toggleAll" @filter="applyFilter" ref="headerComponent"></table-header>
             <table-content :enable-row-click="enableRowClick" @loaded="onLoaded" v-if="pageData.length > 0" :columns="columns" :data="pageData" :loading="loading" @toggle-item="toggleItem" @click="handleClick"></table-content>
         </table>
-        <div class="row" v-if="total > 0 && !disablePagination">
-            <div class="col-md-2">
-                <select class="form-select form-select-sm" v-model="per_page" @change="changePerPage">
+        <div class="grid grid-cols-12 gap-4 mt-4" v-if="total > 0 && !disablePagination">
+            <div class="col-span-2">
+                <select class="block w-full px-3 py-1.5 text-sm border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" v-model="per_page" @change="changePerPage">
                     <option value="10">10 itens por página</option>
                     <option value="25">25 itens por página</option>
                     <option value="50">50 itens por página</option>
@@ -21,26 +21,26 @@
                 </select>
             </div>
 
-            <div class="col-md-3">
-                <p>
+            <div class="col-span-3">
+                <p class="text-sm">
                     Exibindo registros de {{from}} à {{ to }}
                 </p>
             </div>
 
-            <div class="col-md-7">
+            <div class="col-span-7">
                 <table-pagination v-if="!loading" @change-page="changePage" :current_page="current_page" :from="from" :to="to" :total="total" :per_page="per_page" :last_page="last_page"></table-pagination>
             </div>
         </div>
-        <div v-if="total === 0" class="text-center">
+        <div v-if="total === 0" class="text-center py-4">
             <p>
                 Sem registros para exibir
             </p>
         </div>
-        <div v-if="error" class="text-center">
-            <p class="small alert alert-danger">
+        <div v-if="error" class="text-center py-2">
+            <p class="text-sm px-4 py-2 bg-red-100 text-red-700 rounded">
                 <i class="fa fa-exclamation-circle"></i> Erro ao tentar exibir dados.
                 <strong>
-                    <button @click="loadData" type="button" class="btn btn-danger text-white btn-sm">
+                    <button @click="loadData" type="button" class="bg-red-600 text-white px-2 py-1 text-sm rounded ml-2">
                         <i class="fa fa-sync"></i>
                         Recarregar
                     </button>
@@ -56,7 +56,7 @@ import TableHeader from './partials/__table-header.vue';
 import TableContent from './partials/__table-content.vue';
 import TablePagination from './partials/__table-pagination.vue';
 import TableLoading from './partials/__table-loading.vue';
-import { useTableFilters } from '../table-filters.js';
+import { useTableFilters } from '../table-filters';
 
 export default defineComponent({
     name: "datatable",
@@ -360,8 +360,8 @@ export default defineComponent({
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .table {
-    font-size: 0.85rem !important;
+    @apply text-sm;
 }
 </style>

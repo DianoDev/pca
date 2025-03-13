@@ -1,22 +1,22 @@
 <template>
     <thead v-if="ready" :id="`head_${table}`">
-    <tr class="table-header">
+    <tr class="table-header bg-gray-50">
         <th v-for="header in columns" :key="header.name" :class="header.headerClass"
-            :style="{width: header.width || 'auto'}" nowrap>
-            <div v-if="!header.checkbox" class="d-block">
+            :style="{width: header.width || 'auto'}" class="whitespace-nowrap px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <div v-if="!header.checkbox" class="block">
                 {{ header.title }}
-                <span @click="sort(header)" class="ms-1"
-                      :class="{'sortable': !!header.sort, 'text-red-500': (header.sort === sortColumn), 'text-gray-500': (header.sort !== sortColumn)}"
+                <span @click="sort(header)" class="ml-1 cursor-pointer"
+                      :class="{'text-red-500': (header.sort === sortColumn), 'text-gray-500': (header.sort !== sortColumn)}"
                       v-if="!!header.sort">
                         <i class="fa"
                            :class="{'fa-sort-asc': (header.sort === sortColumn && sortAsc), 'fa-sort-desc': (header.sort === sortColumn && !sortAsc), 'fa-sort': (header.sort !== sortColumn)}"></i>
                 </span>
-                <div class="ms-1 d-inline" v-if="header.filter">
+                <div class="ml-1 inline-block" v-if="header.filter">
                     <span @click="toggleFilter(header.name)" role="button" :class="{'text-red-500': hasFilter(header), 'text-gray-500': !hasFilter(header)}">
                         <i class="fa fa-filter"></i>
                     </span>
-                    <div class="filter-container p-3 border" :id="`filter_column_${sanitize(header.name)}`">
-                        <i class="fa fa-times-circle text-danger close-btn" @click="hideAllFilters()"></i>
+                    <div class="filter-container p-3 border border-gray-200 bg-white rounded shadow-md" :id="`filter_column_${sanitize(header.name)}`">
+                        <i class="fa fa-times-circle text-red-500 close-btn" @click="hideAllFilters()"></i>
                         <component :table="table" :is="`table-filter-${header.filter.type}`" :name="header.name" :filter="header.filter" @updated="handleUpdateFilter"/>
                     </div>
                 </div>
@@ -30,9 +30,8 @@
 </template>
 
 <script>
-
 import {ref, onMounted} from 'vue';
-import { useTableFilters } from '../../table-filters.js';
+import { useTableFilters } from '../../table-filters';
 import TableCheckbox from "./__table-checkbox.vue";
 import TableFilterText from './filters/__table-filter-text.vue'
 import TableFilterCPF from './filters/__table-filter-cpf.vue'
@@ -148,33 +147,20 @@ export default {
 </script>
 
 <style scoped>
-
-.sortable {
-    cursor: pointer;
-}
-
-.table-action-active {
-    opacity: 1;
-}
-
-.table-action-inactive {
-    opacity: .2;
-}
-
 .filter-container {
     display: none;
     position: absolute;
     width: 250px;
-    background-color: #ffff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    @apply bg-white;
+    @apply shadow-md;
     z-index: 4;
+}
 
-    .close-btn {
-        font-size: 140%;
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        cursor: pointer;
-    }
+.filter-container .close-btn {
+    font-size: 140%;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    cursor: pointer;
 }
 </style>

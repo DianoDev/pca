@@ -1,3 +1,6 @@
+@import "@fortawesome/fontawesome-free/css/all.css";
+/* This imports all Font Awesome styles including solid, regular, brands, etc. */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

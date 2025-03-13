@@ -1,31 +1,38 @@
 <template>
     <div v-if="total > 0">
-        <nav aria-label="...">
-            <ul class="pagination pagination-sm justify-content-end">
-                <li class="page-item" :class="{disabled: current_page === 1}">
-                    <a class="page-link" href="javascript:" @click="goto(1)">
+        <nav class="flex justify-end">
+            <ul class="flex">
+                <li :class="{'opacity-50 cursor-not-allowed': current_page === 1}">
+                    <a class="relative inline-flex items-center px-2 py-1 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                       href="javascript:" @click="goto(1)">
                         <i class="fa fa-angles-left"></i>
                     </a>
                 </li>
 
-                <li class="page-item" :class="{disabled: current_page === 1}">
-                    <a class="page-link" href="javascript:" @click="goto(current_page - 1)">
+                <li :class="{'opacity-50 cursor-not-allowed': current_page === 1}">
+                    <a class="relative inline-flex items-center px-2 py-1 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                       href="javascript:" @click="goto(current_page - 1)">
                         <i class="fa fa-chevron-left"></i>
                     </a>
                 </li>
 
-                <li v-for="page in pageList" class="page-item" :class="{active: (page === current_page)}">
-                    <a class="page-link" :class="{'text-white': (page === current_page)}" href="javascript:" @click="select(page)">{{page}}</a>
+                <li v-for="page in pageList"
+                    class="relative inline-flex items-center">
+                    <a class="px-3 py-1 border border-gray-300 text-sm font-medium hover:bg-gray-50"
+                       :class="{'bg-blue-500 text-white hover:bg-blue-600': (page === current_page), 'bg-white text-gray-500': (page !== current_page)}"
+                       href="javascript:" @click="select(page)">{{page}}</a>
                 </li>
 
-                <li class="page-item" :class="{disabled: last_page === current_page}">
-                    <a class="page-link" href="javascript:" @click="goto(current_page + 1)">
+                <li :class="{'opacity-50 cursor-not-allowed': last_page === current_page}">
+                    <a class="relative inline-flex items-center px-2 py-1 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                       href="javascript:" @click="goto(current_page + 1)">
                         <i class="fa fa-chevron-right"></i>
                     </a>
                 </li>
 
-                <li class="page-item" :class="{disabled: last_page === current_page}">
-                    <a class="page-link" href="javascript:" @click="goto(last_page)">
+                <li :class="{'opacity-50 cursor-not-allowed': last_page === current_page}">
+                    <a class="relative inline-flex items-center px-2 py-1 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                       href="javascript:" @click="goto(last_page)">
                         <i class="fa fa-angles-right"></i>
                     </a>
                 </li>
@@ -93,7 +100,3 @@ export default {
     }
 };
 </script>
-
-<style scoped>
-
-</style>

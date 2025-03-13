@@ -1,16 +1,16 @@
 <template>
-    <tbody>
-        <tr v-for="row in data" :key="row.rn" :class="{'clickable': enableRowClick}" @click.stop="handleClick(row)">
-            <td v-for="column in tableColumns" :class="getClasses(column)" :nowrap="column.nowrap">
-                <div v-if="!column.checkbox">
-                    <span v-if="!column.component" v-html="printItem(row, column)"></span>
-                    <component v-if="column.component && updated" :is="column.component" :readonly="column.readonly || false" :data="getValue(row, column)" :reference="row"></component>
-                </div>
-                <div v-if="column.checkbox && updated" class="text-center">
-                    <table-checkbox :value="getValue(row, column)" @toggle="toggle" />
-                </div>
-            </td>
-        </tr>
+    <tbody class="bg-white divide-y divide-gray-200">
+    <tr v-for="row in data" :key="row.rn" :class="{'cursor-pointer hover:bg-gray-50': enableRowClick}" @click.stop="handleClick(row)">
+        <td v-for="column in tableColumns" :class="getClasses(column)" class="px-3 py-2 text-sm">
+            <div v-if="!column.checkbox">
+                <span v-if="!column.component" v-html="printItem(row, column)"></span>
+                <component v-if="column.component && updated" :is="column.component" :readonly="column.readonly || false" :data="getValue(row, column)" :reference="row"></component>
+            </div>
+            <div v-if="column.checkbox && updated" class="text-center">
+                <table-checkbox :value="getValue(row, column)" @toggle="toggle" />
+            </div>
+        </td>
+    </tr>
     </tbody>
 </template>
 
@@ -42,9 +42,8 @@ export default {
         const init = () => {}
 
         const getClasses = (column) => {
-            let nowrap = column.nowrap ? ' nowrap': '';
             let contentClass = column.contentClass ?? '';
-            return (contentClass + nowrap);
+            return contentClass;
         }
 
         const printItem = (row, column) => {
@@ -103,17 +102,17 @@ export default {
 
         const yesno = (value) => {
             if(value === 'S' || value === '1' || parseInt(value) === 1) {
-                return '<span class="badge bg-green-500 text-white">SIM</span>';
+                return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 text-white">SIM</span>';
             } else {
-                return '<span class="badge bg-gray-500 text-white">NÃO</span>';
+                return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500 text-white">NÃO</span>';
             }
         }
 
         const active = (value) => {
             if(value === 'S' || value === '1' || parseInt(value) === 1) {
-                return '<span class="text-green"><i class="fa fa-check-circle"></i></span>';
+                return '<span class="text-green-500"><i class="fa fa-check-circle"></i></span>';
             } else {
-                return '<span class="text-gray"><i class="fa fa-circle-xmark"></i></span>';
+                return '<span class="text-gray-500"><i class="fa fa-circle-xmark"></i></span>';
             }
         }
 
@@ -149,15 +148,7 @@ export default {
 </script>
 
 <style>
-    .action {
-        margin-right: 10px;
-    }
-    .nowrap {
-        text-wrap: nowrap;
-    }
-
-    .clickable {
-        cursor: pointer !important;
-    }
-
+.action {
+    @apply mr-2;
+}
 </style>

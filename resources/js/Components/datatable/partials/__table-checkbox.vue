@@ -1,6 +1,6 @@
 <template>
     <label class="container">
-        <input class="table-checkbox" type="checkbox" :id="`table-checkbox-${value}`" :checked="checked" @change="toggle">
+        <input class="table-checkbox absolute opacity-0 cursor-pointer h-0 w-0" type="checkbox" :id="`table-checkbox-${value}`" :checked="checked" @change="toggle">
         <div class="checkmark"></div>
     </label>
 </template>
@@ -49,65 +49,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-}
-
 .container {
-    display: block;
-    position: relative;
-    cursor: pointer;
-    font-size: 1.5rem;
-    user-select: none;
+    @apply block relative cursor-pointer text-2xl select-none;
 }
 
-/* Create a custom checkbox */
 .checkmark {
     --clr: #507497;
-    position: relative;
-    top: 0;
-    left: 0;
-    height: 1em;
-    width: 1em;
-    border: solid 1px #888;
-    background-color: #ffffff;
-    border-radius: .3rem;
-    transition: 100ms;
+    @apply relative top-0 left-0 h-4 w-4 border border-gray-400 bg-white rounded transition-all duration-100;
 }
 
-/* When the checkbox is checked, add a blue background */
 .container input:checked ~ .checkmark {
     background-color: var(--clr);
-    border: 0;
-    border-radius: .3rem;
+    @apply border-0 rounded;
     animation: pulse 100ms ease-in-out;
 }
 
-/* Create the checkmark/indicator (hidden when not checked) */
 .checkmark:after {
     content: "";
-    position: absolute;
-    display: none;
+    @apply absolute hidden;
 }
 
-/* Show the checkmark when checked */
 .container input:checked ~ .checkmark:after {
-    display: block;
+    @apply block;
 }
 
-/* Style the checkmark/indicator */
 .container .checkmark:after {
-    left: 0.40em;
-    top: 0.20em;
-    width: 0.25em;
-    height: 0.5em;
-    border: solid #ffffff;
-    border-width: 0 0.15em 0.15em 0;
-    transform: rotate(45deg);
+    @apply left-1.5 top-0.5 w-1 h-2 border-solid border-white border-r-2 border-b-2 rotate-45;
 }
 
 @keyframes pulse {
