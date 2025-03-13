@@ -17,7 +17,7 @@ return new class extends Migration
             $table->char('ativo', 1);
             $table->char('tem_setor_filho', 1);
             $table->timestamps();
-
+            $table->softDeletes();
             // Índice para o código setor pai
             $table->index('codigo_setor_pai');
         });

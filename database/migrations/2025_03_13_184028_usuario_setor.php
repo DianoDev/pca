@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('numero_matricula');
             $table->unsignedBigInteger('numero_matricula_gestor');
             $table->timestamps();
-
+            $table->softDeletes();
             // Chave primária composta
             $table->primary(['codigo_setor', 'numero_matricula']);
 

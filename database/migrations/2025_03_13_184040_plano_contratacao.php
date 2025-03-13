@@ -21,7 +21,7 @@ return new class extends Migration
             $table->char('status', 1);
             $table->float('valor_total')->nullable();
             $table->timestamps();
-
+            $table->softDeletes();
             // Índice para a chave estrangeira para scmpca_setor_pca
             $table->foreign('codigo_setor')
                 ->references('codigo_setor')

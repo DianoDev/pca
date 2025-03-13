@@ -23,7 +23,7 @@ return new class extends Migration
             $table->char('classificacao', 2)->nullable();
             $table->char('status', 1);
             $table->timestamps();
-
+            $table->softDeletes();
             // Índice para a chave estrangeira para plano_contratacao
             $table->foreign('id_plano_contratacao')
                 ->references('id')

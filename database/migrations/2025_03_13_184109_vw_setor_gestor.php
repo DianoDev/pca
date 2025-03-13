@@ -10,7 +10,7 @@ return new class extends Migration {
     public function up(): void
     {
         DB::statement("
-        CREATE VIEW SCMPCA.VW_SETOR_GESTOR AS
+        CREATE OR REPLACE VIEW SCMPCA.VW_SETOR_GESTOR AS
        SELECT
 	s.CODIGO_SETOR,
 	s.NOME_SETOR_FORMATADO,
@@ -27,6 +27,6 @@ LEFT JOIN PUBLICO.VW_SIGP_FUNCIONARIO vsf ON (vsf.NUMERO_MATRICULA = s.RESPONSAV
      */
     public function down(): void
     {
-        DB::statement("DROP VIEW SCMSIC.VW_SETOR_GESTOR");
+        DB::statement("DROP VIEW SCMPCA.VW_SETOR_GESTOR");
     }
 };
