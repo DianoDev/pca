@@ -1,5 +1,13 @@
 <template>
     <div class="p-6">
+        <popup></popup>
+        <div class="ms-2">
+            <popup-button id="novo-publicacao" title="Nova Publicação" size="xl"
+                          component="UsuarioSetorForm">
+                <i class="fa fa-plus"></i>
+                Nova Publicação
+            </popup-button>
+        </div>
         <datatable id="usuario_setor" :columns="columns" @delete="confirmRemove" :source="source"></datatable>
     </div>
 </template>
@@ -7,6 +15,9 @@
 <script setup>
 import {ref, inject} from 'vue';
 import Datatable from "@/Components/datatable/Datatable.vue";
+import Popup from "@/Components/Popup.vue";
+import PopupButton from "@/Components/PopupButton.vue";
+
 
 const events = inject('events');
 const source = '/usuario-setor/list';
@@ -19,11 +30,10 @@ const columns = ref([
         title: 'Ação',
         width: '9%',
         nowrap: true,
-        contentClass: 'text-center',
         formatter: (value, row) => {
             let output = "";
-            output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Editar" data-action="popup" data-size="xl" data-component="usuario-setor-form" data-title="Editar  Usuario Setor" class=" mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-pencil"></i></a>`;
-            output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Remover" data-action="delete" class="action mx-0 action-delete tooltip tooltip--top"><i class="fa fa-trash mx-1"></i></a>`;
+            output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Editar" data-action="popup" data-size="xl" data-component="UsuarioSetorForm" data-title="Editar  Usuario Setor" class=" mx-1 action text-blue-600 text-align-center tooltip tooltip--top"><i class="fa fa-pencil"></i></a>`;
+            output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Remover" data-action="delete" class="action mx-0 action-delete text-blue-600 tooltip tooltip--top"><i class="fa fa-trash mx-1"></i></a>`;
             return output;
         }
     }

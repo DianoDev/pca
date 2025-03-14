@@ -132,6 +132,10 @@ export default defineComponent({
                                 const data = JSON.parse(item.dataset.json ?? null);
                                 const size = item.dataset.size ?? null;
                                 const title = item.dataset.title ?? null;
+                                console.log(data,'data')
+                                console.log(size,'size')
+                                console.log(title,'title')
+                                console.log(component,'component')
                                 events.emit('popup', {
                                     component,
                                     data,

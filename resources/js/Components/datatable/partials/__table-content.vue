@@ -1,6 +1,12 @@
 <template>
-    <tbody class="bg-white divide-y divide-gray-200">
-    <tr v-for="row in data" :key="row.rn" :class="{'cursor-pointer hover:bg-gray-50': enableRowClick}" @click.stop="handleClick(row)">
+    <tbody class="bg-white">
+    <tr
+        v-for="row in data"
+        :key="row.rn"
+        class="border-t border-b border-gray-200 hover:bg-gray-100"
+        :class="{'cursor-pointer': enableRowClick}"
+        @click.stop="handleClick(row)"
+    >
         <td v-for="column in tableColumns" :class="getClasses(column)" class="px-3 py-2 text-sm">
             <div v-if="!column.checkbox">
                 <span v-if="!column.component" v-html="printItem(row, column)"></span>
@@ -29,6 +35,7 @@ export default {
         const tableColumns = ref(props.columns);
         const updated = ref(true);
         const ready = ref(false);
+        console.log("enableRowClick:", props.enableRowClick); // Debug log
 
         watchEffect(() => {
             let total = props.data.length;
@@ -43,7 +50,8 @@ export default {
 
         const getClasses = (column) => {
             let contentClass = column.contentClass ?? '';
-            return contentClass;
+            let nowrapClass = column.nowrap ? 'whitespace-nowrap' : '';
+            return `${contentClass} ${nowrapClass}`;
         }
 
         const printItem = (row, column) => {
