@@ -1,8 +1,8 @@
 <template>
     <LayoutPrincipal>
-        <div class="p-6">
+        <div class="p-6 bg-white rounded">
             <popup></popup>
-            <div class="ms-2">
+            <div class="mb-6">
                 <popup-button id="novo-publicacao" title="Nova Publicação" size="xl"
                               component="UsuarioSetorForm">
                     <i class="fa fa-plus"></i>
@@ -27,8 +27,8 @@ const events = inject('events');
 const source = '/usuario-setor/list';
 const columns = ref([
     {name: 'codigo_setor', title: 'Codigo Setor', width: '20%', sort: 'codigo_setor', nowrap: true},
-    {name: 'nome_setor_formatado', title: 'Nome Setor', width: '20%', sort: 'numero_matricula', nowrap: true},
-    {name: 'nome_funcionario', title: 'Nome Funcionario', width: '20%', sort: 'numero_matricula_gestor', nowrap: true},
+    {name: 'nome_setor_formatado', title: 'Nome Setor', width: '20%', sort: 'nome_setor_formatado', nowrap: true},
+    {name: 'nome_funcionario', title: 'Nome Funcionario', width: '20%', sort: 'nome_funcionario', nowrap: true},
     {
         name: 'id',
         title: 'Ação',
