@@ -1,18 +1,22 @@
 <template>
-    <div class="p-6">
-        <popup></popup>
-        <div class="ms-2">
-            <popup-button id="novo-publicacao" title="Nova Publicação" size="xl"
-                          component="UsuarioSetorForm">
-                <i class="fa fa-plus"></i>
-                Nova Publicação
-            </popup-button>
+    <LayoutPrincipal>
+        <div class="p-6">
+            <popup></popup>
+            <div class="ms-2">
+                <popup-button id="novo-publicacao" title="Nova Publicação" size="xl"
+                              component="UsuarioSetorForm">
+                    <i class="fa fa-plus"></i>
+                    Nova Publicação
+                </popup-button>
+            </div>
+            <datatable id="usuario_setor" :columns="columns" @delete="confirmRemove" :source="source"></datatable>
         </div>
-        <datatable id="usuario_setor" :columns="columns" @delete="confirmRemove" :source="source"></datatable>
-    </div>
+    </LayoutPrincipal>
+
 </template>
 
 <script setup>
+import LayoutPrincipal from '@/Layouts/LayoutPrincipal.vue';
 import {ref, inject} from 'vue';
 import Datatable from "@/Components/datatable/Datatable.vue";
 import Popup from "@/Components/Popup.vue";
