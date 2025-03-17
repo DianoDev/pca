@@ -28,7 +28,7 @@
                     </button>
 
                     <!-- Título da página -->
-                    <h1 class="page-title">Dashboard</h1>
+                    <h1 class="page-title">Organograma de Setores</h1>
 
                     <!-- Área do usuário -->
                     <div class="user-area">

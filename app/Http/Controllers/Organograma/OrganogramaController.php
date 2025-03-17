@@ -126,9 +126,6 @@ class OrganogramaController extends Controller
 
     public function removerSetor(Request $request)
     {
-        $request->validate([
-            'codigo_setor' => 'required|exists:setor_pca,codigo_setor',
-        ]);
 
         $setor = SetorPca::find($request->codigo_setor);
 

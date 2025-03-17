@@ -39,5 +39,5 @@ Route::group(['prefix' => 'organograma'], function () {
     Route::get('/', [OrganogramaController::class, 'index'])->name('organograma.index');
     Route::get('/buscar-setores', [OrganogramaController::class, 'buscarSetores'])->name('organograma.buscar-setores');
     Route::post('/adicionar-filho', [OrganogramaController::class, 'adicionarFilho'])->name('organograma.adicionar-filho');
-    Route::delete('/remover-setor', [OrganogramaController::class, 'removerSetor'])->name('organograma.remover-setor');
+    Route::delete('/remover-setor/{id}', [OrganogramaController::class, 'removerSetor'])->name('organograma.remover-setor');
 });
