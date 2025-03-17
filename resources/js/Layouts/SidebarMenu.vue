@@ -31,10 +31,10 @@
                         <!-- Item simples -->
                         <li class="menu-item" :class="{ 'active': isActive('usuarios') }">
                             <a href="#" class="menu-link">
-                <span class="menu-icon">
-                  <i class="fa fa-user"></i>
-                </span>
-                                <span class="menu-title">Usuários</span>
+                                <span class="menu-icon">
+                                    <i class="fa fa-user"></i>
+                                </span>
+                                <span class="menu-title">Organograma</span>
                             </a>
                         </li>
 

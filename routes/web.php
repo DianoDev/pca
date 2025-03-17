@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Organograma\OrganogramaController;
 use App\Http\Controllers\UsuarioSetor\UsuarioSetorController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -25,8 +26,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
-
 Route::group(['prefix' => 'usuario-setor'], function () {
     Route::get('/', [UsuarioSetorController::class, 'index'])->name('usuario_setor.index');
     Route::get('/list', [UsuarioSetorController::class, 'list'])->name('usuario_setor.list');
@@ -34,4 +33,11 @@ Route::group(['prefix' => 'usuario-setor'], function () {
     Route::post('/', [UsuarioSetorController::class, 'create'])->name('usuario_setor.create');
     Route::post('/{id}', [UsuarioSetorController::class, 'update'])->name('usuario_setor.update');
     Route::delete('/{id}', [UsuarioSetorController::class, 'delete'])->name('usuario_setor.delete');
+});
+
+Route::group(['prefix' => 'organograma'], function () {
+    Route::get('/', [OrganogramaController::class, 'index'])->name('organograma.index');
+    Route::get('/buscar-setores', [OrganogramaController::class, 'buscarSetores'])->name('organograma.buscar-setores');
+    Route::post('/adicionar-filho', [OrganogramaController::class, 'adicionarFilho'])->name('organograma.adicionar-filho');
+    Route::delete('/remover-setor', [OrganogramaController::class, 'removerSetor'])->name('organograma.remover-setor');
 });

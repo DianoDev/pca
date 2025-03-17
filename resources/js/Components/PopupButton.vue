@@ -23,6 +23,7 @@ const props = withDefaults(
 
 
 const open = () => {
+    console.log(props.component)
     const parsedData = typeof props.data === 'string' ? JSON.parse(props.data) : props.data;
     events.emit('popup', {
         title: props.title,
