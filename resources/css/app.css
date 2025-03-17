@@ -1,6 +1,16 @@
+/* Importar Roboto da Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
 @import "@fortawesome/fontawesome-free/css/all.css";
 /* This imports all Font Awesome styles including solid, regular, brands, etc. */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Aplicar Roboto como fonte padrão */
+@layer base {
+    html {
+        font-family: 'Roboto', system-ui, sans-serif;
+    }
+}

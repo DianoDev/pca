@@ -7,7 +7,7 @@
         :class="{'cursor-pointer': enableRowClick}"
         @click.stop="handleClick(row)"
     >
-        <td v-for="column in tableColumns" :class="getClasses(column)" class="px-3 py-3 text-md">
+        <td v-for="column in tableColumns" :class="getClasses(column)" class="px-3 py-3 text-sm font-light">
             <div v-if="!column.checkbox">
                 <span v-if="!column.component" v-html="printItem(row, column)"></span>
                 <component v-if="column.component && updated" :is="column.component" :readonly="column.readonly || false" :data="getValue(row, column)" :reference="row"></component>
