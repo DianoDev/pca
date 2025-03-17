@@ -25,7 +25,7 @@ return new class extends Migration
             // Índice para a chave estrangeira para scmpca_setor_pca
             $table->foreign('codigo_setor')
                 ->references('codigo_setor')
-                ->on('scmpca_setor_pca')
+                ->on('setor_pca')
                 ->onDelete('cascade');
 
             // Índice para o número de matrícula do gestor

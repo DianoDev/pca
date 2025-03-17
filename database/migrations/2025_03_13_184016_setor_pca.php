@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('scmpca_setor_pca', function (Blueprint $table) {
+        Schema::create('setor_pca', function (Blueprint $table) {
             $table->unsignedBigInteger('codigo_setor')->primary();
             $table->unsignedBigInteger('codigo_setor_pai')->nullable();
             $table->char('ativo', 1);
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('scmpca_setor_pca');
+        Schema::dropIfExists('setor_pca');
     }
 };
