@@ -2,7 +2,7 @@
     <div class="app-layout" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
         <!-- Menu Lateral -->
         <SidebarMenu
-            ref="sidebar"
+            ref="sidebarRef"
             @collapse-changed="onSidebarCollapse"
             @toggle-changed="onSidebarToggle"
             @submenu-clicked="handleSubmenuClick"
@@ -27,8 +27,8 @@
                         <i class="fa fa-bars"></i>
                     </button>
 
-                    <!-- Título da página -->
-                    <h1 class="page-title">Organograma de Setores</h1>
+                    <!-- Título da página dinâmico -->
+                    <h1 class="page-title">{{ pageTitle }}</h1>
 
                     <!-- Área do usuário -->
                     <div class="user-area">
@@ -61,49 +61,112 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, inject, onMounted } from 'vue';
 import SidebarMenu from './SidebarMenu.vue';
 
-export default {
-    name: 'AppLayout',
-    components: {
-        SidebarMenu
-    },
-    data() {
-        return {
-            sidebarCollapsed: false,
-            sidebarVisible: false
-        }
-    },
-    methods: {
-        toggleCollapse() {
-            this.$refs.sidebar.toggleCollapse();
-        },
+// Refs para o estado do componente
+const sidebarCollapsed = ref(false);
+const sidebarVisible = ref(false);
+const sidebarRef = ref(null);
 
-        toggleSidebar() {
-            this.$refs.sidebar.toggleSidebar();
-        },
+// Props para receber o título da página
+const props = defineProps({
+    pageTitle: {
+        type: String,
+        default: 'Página Inicial'
+    }
+});
 
-        closeSidebar() {
-            if (this.sidebarVisible) {
-                this.$refs.sidebar.toggleSidebar();
-            }
-        },
+// Alternate approach: Using Inertia.js (if available)
+const page = inject('page', null);
 
-        onSidebarCollapse(collapsed) {
-            this.sidebarCollapsed = collapsed;
-        },
+// Computed property para o título da página baseado em diferentes fontes
+const pageTitle = computed(() => {
+    // Mapeamento de rotas para títulos (URLs parciais)
+    const urlTitles = {
+        '/dashboard': 'Dashboard',
+        '/organograma': 'Organograma de Setores',
+        '/contratos': 'Gestão de Contratos',
+        '/configuracoes/geral': 'Configurações Gerais',
+        '/configuracoes/perfil': 'Configurações de Perfil',
+        '/relatorios/diario': 'Relatório Diário',
+        '/relatorios/mensal': 'Relatório Mensal',
+        '/relatorios/anual': 'Relatório Anual'
+    };
 
-        onSidebarToggle(toggled) {
-            this.sidebarVisible = toggled;
-        },
+    // 1. Prioridade: Props vindos do componente pai
+    if (props.pageTitle && props.pageTitle !== 'Página Inicial') {
+        return props.pageTitle;
+    }
 
-        handleSubmenuClick(submenuName) {
-            console.log('Submenu clicked:', submenuName);
-            // Adicione aqui a lógica específica para quando um submenu é clicado no modo collapsed
+    // 2. Se estiver usando Inertia.js
+    if (page && page.value && page.value.component) {
+        // Nome do componente no Inertia
+        const componentName = page.value.component;
+        if (componentName === 'Dashboard') return 'Dashboard';
+        if (componentName === 'Organograma') return 'Organograma de Setores';
+        if (componentName === 'Contratos') return 'Gestão de Contratos';
+    }
+
+    // 3. Usando URL da página atual
+    const currentPath = window.location.pathname;
+
+    // Verifica se a URL atual contém alguma das chaves no mapeamento
+    for (const [urlPath, title] of Object.entries(urlTitles)) {
+        if (currentPath.includes(urlPath)) {
+            return title;
         }
     }
-}
+
+    // 4. Fallback: extrai a última parte do caminho da URL
+    const pathSegments = currentPath.split('/').filter(Boolean);
+    if (pathSegments.length > 0) {
+        const lastSegment = pathSegments[pathSegments.length - 1];
+
+        // Tratamento de casos especiais
+        if (lastSegment === 'contratos') {
+            return 'Gestão de Contratos';
+        }
+
+        return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
+    }
+
+    // 5. Valor padrão
+    return 'Página Inicial';
+});
+
+// Métodos
+const toggleCollapse = () => {
+    if (sidebarRef.value) {
+        sidebarRef.value.toggleCollapse();
+    }
+};
+
+const toggleSidebar = () => {
+    if (sidebarRef.value) {
+        sidebarRef.value.toggleSidebar();
+    }
+};
+
+const closeSidebar = () => {
+    if (sidebarVisible.value && sidebarRef.value) {
+        sidebarRef.value.toggleSidebar();
+    }
+};
+
+const onSidebarCollapse = (collapsed) => {
+    sidebarCollapsed.value = collapsed;
+};
+
+const onSidebarToggle = (toggled) => {
+    sidebarVisible.value = toggled;
+};
+
+const handleSubmenuClick = (submenuName) => {
+    console.log('Submenu clicked:', submenuName);
+    // Adicione aqui a lógica específica para quando um submenu é clicado no modo collapsed
+};
 </script>
 
 <style scoped>

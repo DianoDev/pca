@@ -18,46 +18,56 @@
             <div class="sidebar-content">
                 <nav class="menu">
                     <ul>
-                        <!-- Item simples -->
+                        <!-- Dashboard -->
                         <li class="menu-item" :class="{ 'active': isActive('dashboard') }">
-                            <a href="#" class="menu-link">
-                <span class="menu-icon">
-                  <i class="fa fa-home"></i>
-                </span>
+                            <a href="/dashboard" class="menu-link">
+                                <span class="menu-icon">
+                                  <i class="fa fa-home"></i>
+                                </span>
                                 <span class="menu-title">Dashboard</span>
                             </a>
                         </li>
 
-                        <!-- Item simples -->
-                        <li class="menu-item" :class="{ 'active': isActive('usuarios') }">
-                            <a href="#" class="menu-link">
+                        <!-- Organograma -->
+                        <li class="menu-item" :class="{ 'active': isActive('organograma') }">
+                            <a href="/organograma" class="menu-link">
                                 <span class="menu-icon">
-                                    <i class="fa fa-user"></i>
+                                    <i class="fa fa-sitemap"></i>
                                 </span>
                                 <span class="menu-title">Organograma</span>
+                            </a>
+                        </li>
+
+                        <!-- Contratos -->
+                        <li class="menu-item" :class="{ 'active': isActive('contratos') }">
+                            <a href="/contratos" class="menu-link">
+                                <span class="menu-icon">
+                                    <i class="fa fa-file-contract"></i>
+                                </span>
+                                <span class="menu-title">Contratos</span>
                             </a>
                         </li>
 
                         <!-- Item com submenu -->
                         <li class="menu-item sub-menu" :class="{ 'open': openSubmenus.includes('config') }">
                             <a href="#" class="menu-link" @click.prevent="toggleSubmenu('config')">
-                <span class="menu-icon">
-                  <i class="fa fa-gear"></i>
-                </span>
+                                <span class="menu-icon">
+                                  <i class="fa fa-gear"></i>
+                                </span>
                                 <span class="menu-title">Configurações</span>
                                 <span class="menu-arrow">
-                  <i :class="['fa', openSubmenus.includes('config') ? 'fa-chevron-down' : 'fa-chevron-right']"></i>
-                </span>
+                                  <i :class="['fa', openSubmenus.includes('config') ? 'fa-chevron-down' : 'fa-chevron-right']"></i>
+                                </span>
                             </a>
                             <div class="sub-menu-list" :style="getSubmenuStyle('config')">
                                 <ul>
                                     <li class="menu-item" :class="{ 'active': isActive('config-geral') }">
-                                        <a href="#" class="menu-link">
+                                        <a href="/configuracoes/geral" class="menu-link">
                                             <span class="menu-title">Geral</span>
                                         </a>
                                     </li>
                                     <li class="menu-item" :class="{ 'active': isActive('config-perfil') }">
-                                        <a href="#" class="menu-link">
+                                        <a href="/configuracoes/perfil" class="menu-link">
                                             <span class="menu-title">Perfil</span>
                                         </a>
                                     </li>
@@ -68,28 +78,28 @@
                         <!-- Item com submenu -->
                         <li class="menu-item sub-menu" :class="{ 'open': openSubmenus.includes('relatorios') }">
                             <a href="#" class="menu-link" @click.prevent="toggleSubmenu('relatorios')">
-                <span class="menu-icon">
-                  <i class="fa fa-chart-bar"></i>
-                </span>
+                                <span class="menu-icon">
+                                  <i class="fa fa-chart-bar"></i>
+                                </span>
                                 <span class="menu-title">Relatórios</span>
                                 <span class="menu-arrow">
-                  <i :class="['fa', openSubmenus.includes('relatorios') ? 'fa-chevron-down' : 'fa-chevron-right']"></i>
-                </span>
+                                  <i :class="['fa', openSubmenus.includes('relatorios') ? 'fa-chevron-down' : 'fa-chevron-right']"></i>
+                                </span>
                             </a>
                             <div class="sub-menu-list" :style="getSubmenuStyle('relatorios')">
                                 <ul>
                                     <li class="menu-item" :class="{ 'active': isActive('relatorio-diario') }">
-                                        <a href="#" class="menu-link">
+                                        <a href="/relatorios/diario" class="menu-link">
                                             <span class="menu-title">Diário</span>
                                         </a>
                                     </li>
                                     <li class="menu-item" :class="{ 'active': isActive('relatorio-mensal') }">
-                                        <a href="#" class="menu-link">
+                                        <a href="/relatorios/mensal" class="menu-link">
                                             <span class="menu-title">Mensal</span>
                                         </a>
                                     </li>
                                     <li class="menu-item" :class="{ 'active': isActive('relatorio-anual') }">
-                                        <a href="#" class="menu-link">
+                                        <a href="/relatorios/anual" class="menu-link">
                                             <span class="menu-title">Anual</span>
                                         </a>
                                     </li>
@@ -110,111 +120,147 @@
     </aside>
 </template>
 
-<script>
-export default {
-    name: 'SidebarMenu',
-    data() {
-        return {
-            collapsed: false,
-            toggled: false,
-            activeItem: 'dashboard',
-            openSubmenus: [],
-            submenuHeights: {}
-        }
-    },
-    methods: {
-        toggleCollapse() {
-            this.collapsed = !this.collapsed;
-            this.$emit('collapse-changed', this.collapsed);
-        },
+<script setup>
+import { ref, nextTick, onMounted, defineEmits } from 'vue';
 
-        toggleSidebar() {
-            this.toggled = !this.toggled;
-            this.$emit('toggle-changed', this.toggled);
-        },
+// Define emits
+const emit = defineEmits(['collapse-changed', 'toggle-changed', 'submenu-clicked']);
 
-        isActive(itemName) {
-            return this.activeItem === itemName;
-        },
+// Estados reativos
+const collapsed = ref(false);
+const toggled = ref(false);
+const activeItem = ref('dashboard');
+const openSubmenus = ref([]);
+const submenuHeights = ref({});
 
-        toggleSubmenu(submenuName) {
-            if (this.collapsed) {
-                // Quando o menu está recolhido, apenas emite o evento para o componente pai
-                this.$emit('submenu-clicked', submenuName);
-                return;
-            }
+// Determina o item ativo com base na URL atual
+onMounted(() => {
+    // Detecta a rota atual
+    const path = window.location.pathname;
 
-            const index = this.openSubmenus.indexOf(submenuName);
-            if (index > -1) {
-                this.openSubmenus.splice(index, 1);
-            } else {
-                // Fecha outros submenus quando estiver em modo "accordion"
-                // Remova a linha abaixo se quiser permitir múltiplos submenus abertos
-                this.openSubmenus = [];
-
-                // Adiciona o novo submenu
-                this.openSubmenus.push(submenuName);
-
-                // Calcula a altura do submenu se ainda não foi calculada
-                if (!this.submenuHeights[submenuName]) {
-                    this.$nextTick(() => {
-                        this.calculateSubmenuHeight(submenuName);
-                    });
-                }
-            }
-        },
-
-        calculateSubmenuHeight(submenuName) {
-            const submenuEl = this.$el.querySelector(`[data-submenu="${submenuName}"] .sub-menu-list ul`);
-            if (submenuEl) {
-                this.submenuHeights[submenuName] = `${submenuEl.scrollHeight}px`;
-            }
-        },
-
-        getSubmenuStyle(submenuName) {
-            if (this.openSubmenus.includes(submenuName)) {
-                return {
-                    height: this.submenuHeights[submenuName] || 'auto',
-                    visibility: 'visible',
-                    opacity: '1'
-                };
-            } else {
-                return {
-                    height: '0',
-                    visibility: 'hidden',
-                    opacity: '0'
-                };
-            }
-        },
-
-        // Para uso externo, se necessário
-        openSubmenu(submenuName) {
-            if (!this.openSubmenus.includes(submenuName)) {
-                this.openSubmenus.push(submenuName);
-            }
-        },
-
-        closeSubmenu(submenuName) {
-            const index = this.openSubmenus.indexOf(submenuName);
-            if (index > -1) {
-                this.openSubmenus.splice(index, 1);
-            }
-        },
-
-        setActive(itemName) {
-            this.activeItem = itemName;
-        }
-    },
-    mounted() {
-        // Calcula todas as alturas dos submenus inicialmente
-        this.$nextTick(() => {
-            const submenus = ['config', 'relatorios'];
-            submenus.forEach(menu => {
-                this.calculateSubmenuHeight(menu);
-            });
-        });
+    if (path.includes('dashboard')) {
+        activeItem.value = 'dashboard';
+    } else if (path.includes('organograma')) {
+        activeItem.value = 'organograma';
+    } else if (path.includes('contratos')) {
+        activeItem.value = 'contratos';
+    } else if (path.includes('configuracoes/geral')) {
+        activeItem.value = 'config-geral';
+        openSubmenus.value.push('config');
+    } else if (path.includes('configuracoes/perfil')) {
+        activeItem.value = 'config-perfil';
+        openSubmenus.value.push('config');
+    } else if (path.includes('relatorios/diario')) {
+        activeItem.value = 'relatorio-diario';
+        openSubmenus.value.push('relatorios');
+    } else if (path.includes('relatorios/mensal')) {
+        activeItem.value = 'relatorio-mensal';
+        openSubmenus.value.push('relatorios');
+    } else if (path.includes('relatorios/anual')) {
+        activeItem.value = 'relatorio-anual';
+        openSubmenus.value.push('relatorios');
     }
-}
+
+    // Calcula todas as alturas dos submenus inicialmente
+    nextTick(() => {
+        const submenus = ['config', 'relatorios'];
+        submenus.forEach(menu => {
+            calculateSubmenuHeight(menu);
+        });
+    });
+});
+
+// Métodos
+const toggleCollapse = () => {
+    collapsed.value = !collapsed.value;
+    emit('collapse-changed', collapsed.value);
+};
+
+const toggleSidebar = () => {
+    toggled.value = !toggled.value;
+    emit('toggle-changed', toggled.value);
+};
+
+const isActive = (itemName) => {
+    return activeItem.value === itemName;
+};
+
+const toggleSubmenu = (submenuName) => {
+    if (collapsed.value) {
+        // Quando o menu está recolhido, apenas emite o evento para o componente pai
+        emit('submenu-clicked', submenuName);
+        return;
+    }
+
+    const index = openSubmenus.value.indexOf(submenuName);
+    if (index > -1) {
+        openSubmenus.value.splice(index, 1);
+    } else {
+        // Fecha outros submenus quando estiver em modo "accordion"
+        // Remova a linha abaixo se quiser permitir múltiplos submenus abertos
+        openSubmenus.value = [];
+
+        // Adiciona o novo submenu
+        openSubmenus.value.push(submenuName);
+
+        // Calcula a altura do submenu se ainda não foi calculada
+        if (!submenuHeights.value[submenuName]) {
+            nextTick(() => {
+                calculateSubmenuHeight(submenuName);
+            });
+        }
+    }
+};
+
+const calculateSubmenuHeight = (submenuName) => {
+    const submenuEl = document.querySelector(`[data-submenu="${submenuName}"] .sub-menu-list ul`);
+    if (submenuEl) {
+        submenuHeights.value[submenuName] = `${submenuEl.scrollHeight}px`;
+    }
+};
+
+const getSubmenuStyle = (submenuName) => {
+    if (openSubmenus.value.includes(submenuName)) {
+        return {
+            height: submenuHeights.value[submenuName] || 'auto',
+            visibility: 'visible',
+            opacity: '1'
+        };
+    } else {
+        return {
+            height: '0',
+            visibility: 'hidden',
+            opacity: '0'
+        };
+    }
+};
+
+// Métodos expostos
+const openSubmenu = (submenuName) => {
+    if (!openSubmenus.value.includes(submenuName)) {
+        openSubmenus.value.push(submenuName);
+    }
+};
+
+const closeSubmenu = (submenuName) => {
+    const index = openSubmenus.value.indexOf(submenuName);
+    if (index > -1) {
+        openSubmenus.value.splice(index, 1);
+    }
+};
+
+const setActive = (itemName) => {
+    activeItem.value = itemName;
+};
+
+// Expor métodos para uso externo
+defineExpose({
+    toggleCollapse,
+    toggleSidebar,
+    openSubmenu,
+    closeSubmenu,
+    setActive
+});
 </script>
 
 <style scoped>
