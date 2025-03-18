@@ -135,6 +135,9 @@ class PlanoContratacaoController extends Controller
             ->distinct()
             ->orderBy('exercicio', 'desc')
             ->pluck('exercicio')
+            ->map(function($year) {
+                return (int)$year; // Ensure years are integers
+            })
             ->toArray();
 
         return response()->json(['years' => $years]);
@@ -154,7 +157,7 @@ class PlanoContratacaoController extends Controller
             return response()->json(['exists' => false]);
         }
 
-        $exists = PlanoContratacao::where('exercicio', $exercicio)->exists();
+        $exists = PlanoContratacao::query()->with('gestor')->where('exercicio', $exercicio)->first();
 
         return response()->json(['exists' => $exists]);
     }
