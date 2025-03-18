@@ -34,6 +34,7 @@
                                                 </div>
                                                 <div class="org-tree-node-actions">
                                                     <button
+                                                        v-if="setor.filhos.length < 0"
                                                         @click="abrirModalAdicionarFilho(setor)"
                                                         class="org-tree-btn org-tree-btn-add p-2"
                                                         title="Adicionar subsetor">
@@ -59,6 +60,7 @@
                                                             </div>
                                                             <div class="org-tree-node-actions">
                                                                 <button
+                                                                    v-if="setor.filhos.length < 0"
                                                                     @click="abrirModalAdicionarFilho(filho)"
                                                                     class="org-tree-btn org-tree-btn-add p-2"
                                                                     title="Adicionar subsetor">
@@ -305,7 +307,6 @@
 
 <script setup>
 import {onMounted, ref, watch} from 'vue';
-import ItemOrganograma from './Componentes/ItemOrganograma.vue';
 import axios from 'axios';
 import AppLayout from "@/Layouts/LayoutPrincipal.vue";
 
