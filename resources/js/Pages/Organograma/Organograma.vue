@@ -3,7 +3,7 @@
         <div class=" container mx-auto">
             <div class="bg-white rounded-lg shadow ">
                 <!-- Árvore de Setores -->
-                <div class="organograma">
+                <div class="">
                     <div v-if="arvoreSetores.length === 0" class="text-center py-8">
                         <div class="text-gray-500 mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -35,19 +35,15 @@
                                                 <div class="org-tree-node-actions">
                                                     <button
                                                         @click="abrirModalAdicionarFilho(setor)"
-                                                        class="org-tree-btn org-tree-btn-add"
+                                                        class="org-tree-btn org-tree-btn-add p-2"
                                                         title="Adicionar subsetor">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                                                        </svg>
+                                                        <i class="fa fa-plus"></i>
                                                     </button>
                                                     <button
                                                         @click="confirmarRemoverSetor(setor)"
-                                                        class="org-tree-btn org-tree-btn-remove"
+                                                        class="org-tree-btn org-tree-btn-remove p-2"
                                                         title="Remover setor">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                        </svg>
+                                                        <i class="fa fa-remove"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -56,7 +52,7 @@
                                             <ul v-if="setor.filhos && setor.filhos.length > 0">
                                                 <li v-for="filho in setor.filhos" :key="filho.id" class="org-tree-child">
                                                     <div class="org-tree-node-container">
-                                                        <div class="org-tree-node">
+                                                        <div class="org-tree-node min-h-36">
                                                             <div class="org-tree-node-info">
                                                                 <h3 class="font-semibold">{{ filho.nome }}</h3>
                                                                 <p v-if="filho.responsavel" class="text-sm text-gray-600">Responsável: {{ filho.responsavel }}</p>
@@ -64,19 +60,15 @@
                                                             <div class="org-tree-node-actions">
                                                                 <button
                                                                     @click="abrirModalAdicionarFilho(filho)"
-                                                                    class="org-tree-btn org-tree-btn-add"
+                                                                    class="org-tree-btn org-tree-btn-add p-2"
                                                                     title="Adicionar subsetor">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                                                                    </svg>
+                                                                    <i class="fa fa-plus"></i>
                                                                 </button>
                                                                 <button
                                                                     @click="confirmarRemoverSetor(filho)"
-                                                                    class="org-tree-btn org-tree-btn-remove"
+                                                                    class="org-tree-btn org-tree-btn-remove p-2"
                                                                     title="Remover setor">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                                    </svg>
+                                                                    <i class="fa fa-remove"></i>
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -85,7 +77,7 @@
                                                         <ul v-if="filho.filhos && filho.filhos.length > 0">
                                                             <li v-for="subfilho in filho.filhos" :key="subfilho.id" class="org-tree-child">
                                                                 <div class="org-tree-node-container">
-                                                                    <div class="org-tree-node">
+                                                                    <div class="org-tree-node min-h-36">
                                                                         <div class="org-tree-node-info">
                                                                             <h3 class="font-semibold">{{ subfilho.nome }}</h3>
                                                                             <p v-if="subfilho.responsavel" class="text-sm text-gray-600">Responsável: {{ subfilho.responsavel }}</p>
@@ -93,27 +85,23 @@
                                                                         <div class="org-tree-node-actions">
                                                                             <button
                                                                                 @click="abrirModalAdicionarFilho(subfilho)"
-                                                                                class="org-tree-btn org-tree-btn-add"
+                                                                                class="org-tree-btn org-tree-btn-add p-2"
                                                                                 title="Adicionar subsetor">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                                                                                </svg>
+                                                                                <i class="fa fa-plus"></i>
                                                                             </button>
                                                                             <button
                                                                                 @click="confirmarRemoverSetor(subfilho)"
-                                                                                class="org-tree-btn org-tree-btn-remove"
+                                                                                class="org-tree-btn org-tree-btn-remove p-2"
                                                                                 title="Remover setor">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                                                </svg>
+                                                                                <i class="fa fa-remove"></i>
                                                                             </button>
                                                                         </div>
                                                                     </div>
 
                                                                     <!-- ADICIONAR AQUI: Quarto nível (subsubfilho) -->
                                                                     <ul v-if="subfilho.filhos && subfilho.filhos.length > 0">
-                                                                        <li v-for="subsubfilho in subfilho.filhos" :key="subsubfilho.id" class="org-tree-child">
-                                                                            <div class="org-tree-node">
+                                                                        <li v-for="subsubfilho in subfilho.filhos" :key="subsubfilho.id" class="org-tree-child ">
+                                                                            <div class="org-tree-node min-h-36">
                                                                                 <div class="org-tree-node-info">
                                                                                     <h3 class="font-semibold">{{ subsubfilho.nome }}</h3>
                                                                                     <p v-if="subsubfilho.responsavel" class="text-sm text-gray-600">Responsável: {{ subsubfilho.responsavel }}</p>
@@ -121,11 +109,9 @@
                                                                                 <div class="org-tree-node-actions">
                                                                                     <button
                                                                                         @click="confirmarRemoverSetor(subsubfilho)"
-                                                                                        class="org-tree-btn org-tree-btn-remove"
+                                                                                        class="org-tree-btn org-tree-btn-remove p-2"
                                                                                         title="Remover setor">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                                                                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                                                        </svg>
+                                                                                        <i class="fa fa-remove"></i>
                                                                                     </button>
                                                                                 </div>
                                                                             </div>
@@ -677,24 +663,51 @@ watch(mostrarBuscaSetorRaiz, (newValue) => {
     }
 }
 
-/* Estilos recursivos para suportar múltiplos níveis */
-.org-tree > ul > li > .org-tree-node-container > ul > li > .org-tree-node {
-    border-color: #8B5CF6;
+
+
+/* Título do nó (nome do setor) */
+.org-tree-node-info h3 {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.25rem;
 }
 
-.org-tree > ul > li > .org-tree-node-container > ul > li > .org-tree-node-container > ul > li > .org-tree-node {
-    border-color: #EC4899;
+/* Texto de responsável */
+.org-tree-node-info p {
+    font-size: 0.75rem; /* 12px */
+    line-height: 1rem;
 }
 
-/* Adicionar o quarto nível com uma cor distinta */
-.org-tree > ul > li > .org-tree-node-container > ul > li > .org-tree-node-container > ul > li > .org-tree-node-container > ul > li > .org-tree-node {
-    border-color: #F59E0B; /* Cor âmbar para o quarto nível */
+/* Ajustar padding do nó para compensar a fonte menor */
+.org-tree-node {
+    padding: 0.75rem;
 }
 
-/* Ajuste adicional para espaçamento em cascata */
-.org-tree > ul > li > .org-tree-node-container > ul > li > .org-tree-node-container > ul > li > .org-tree-node-container {
-    margin-top: 1.5rem;
+/* Reduzir tamanho dos ícones de ação */
+.org-tree-btn {
+    width: 20px;
+    height: 20px;
 }
 
+.org-tree-btn svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+/* Espaçamento entre os nós */
+.org-tree ul ul li {
+    padding-top: 1.5rem;
+    margin: 0 0.75rem;
+}
+
+/* Reduzir espaçamento vertical geral */
+.org-tree-node-container {
+    margin-top: 0.5rem;
+}
+
+/* Ajustar medida mínima do nó */
+.org-tree-node {
+    min-width: 200px;
+    max-width: 280px;
+}
 
 </style>
