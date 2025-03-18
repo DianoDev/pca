@@ -34,7 +34,7 @@
                                                 </div>
                                                 <div class="org-tree-node-actions">
                                                     <button
-                                                        v-if="setor.filhos.length < 0"
+                                                        v-if="setor.filhos.length === 0"
                                                         @click="abrirModalAdicionarFilho(setor)"
                                                         class="org-tree-btn org-tree-btn-add p-2"
                                                         title="Adicionar subsetor">
@@ -60,7 +60,7 @@
                                                             </div>
                                                             <div class="org-tree-node-actions">
                                                                 <button
-                                                                    v-if="setor.filhos.length < 0"
+                                                                    v-if="filho.filhos.length === 0"
                                                                     @click="abrirModalAdicionarFilho(filho)"
                                                                     class="org-tree-btn org-tree-btn-add p-2"
                                                                     title="Adicionar subsetor">

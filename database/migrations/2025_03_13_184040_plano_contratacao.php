@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('codigo_setor');
             $table->unsignedBigInteger('numero_matricula_gestor');
-            $table->string('matricula', 20)->nullable();
+            $table->integer('exercicio');
             $table->string('email', 255)->nullable();
             $table->string('telefone', 20)->nullable();
             $table->char('status', 1);
