@@ -1,7 +1,6 @@
 <template>
     <LayoutPrincipal>
         <div class="p-6 bg-white rounded">
-            <popup></popup>
             <div class="mb-6">
                 <popup-button id="novo-publicacao" title="Nova Publicação" size="xl"
                               component="UsuarioSetorForm">
@@ -19,7 +18,6 @@
 import LayoutPrincipal from '@/Layouts/LayoutPrincipal.vue';
 import {ref, inject} from 'vue';
 import Datatable from "@/Components/datatable/Datatable.vue";
-import Popup from "@/Components/Popup.vue";
 import PopupButton from "@/Components/PopupButton.vue";
 
 

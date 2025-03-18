@@ -42,6 +42,7 @@
 
             <!-- Conteúdo da página -->
             <main class="page-content">
+              <popup></popup>
                 <slot></slot>
             </main>
 
@@ -64,7 +65,7 @@
 <script setup>
 import { ref, computed, inject, onMounted } from 'vue';
 import SidebarMenu from './SidebarMenu.vue';
-
+import Popup from "@/Components/Popup.vue";
 // Refs para o estado do componente
 const sidebarCollapsed = ref(false);
 const sidebarVisible = ref(false);

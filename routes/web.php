@@ -54,7 +54,9 @@ require __DIR__.'/auth.php';
 Route::group(['prefix' => 'plano-contratacao','middleware' => ['auth','setor']], function () {
     Route::get('/', [PlanoContratacaoController::class, 'index'])->name('plano_contratacao.index');
     Route::get('/list', [PlanoContratacaoController::class, 'list'])->name('plano_contratacao.list');
-    Route::get('/{id}', [PlanoContratacaoController::class, 'edit'])->name('plano_contratacao.edit');
+    Route::get('/years', [PlanoContratacaoController::class, 'getYears'])->name('plano_contratacao.getYears');
+    Route::get('/exists', [PlanoContratacaoController::class, 'exists'])->name('plano_contratacao.exists');
+    Route::get('/gestorInfo', [PlanoContratacaoController::class, 'gestorInfo'])->name('plano_contratacao.edit');
     Route::post('/', [PlanoContratacaoController::class, 'create'])->name('plano_contratacao.create');
     Route::post('/{id}', [PlanoContratacaoController::class, 'update'])->name('plano_contratacao.update');
     Route::delete('/{id}', [PlanoContratacaoController::class, 'delete'])->name('plano_contratacao.delete');
