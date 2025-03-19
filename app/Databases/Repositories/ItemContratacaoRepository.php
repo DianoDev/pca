@@ -5,6 +5,7 @@ use App\Databases\Contracts\ItemContratacaoContract;
 use App\Databases\Models\ItemContratacao;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -48,7 +49,7 @@ class ItemContratacaoRepository implements ItemContratacaoContract
      */
     public function paginate(array $pagination = [], array $columns = ['*']): LengthAwarePaginator
     {
-        $query = ItemContratacao::query();
+        $query = ItemContratacao::query()->where('id_plano_contratacao','=', $pagination['id_plano_contratacao']);
 
         if (isset($pagination['id_plano_contratacao'])) {
             $keyword = mb_strtolower($pagination['id_plano_contratacao']);
@@ -87,7 +88,7 @@ class ItemContratacaoRepository implements ItemContratacaoContract
             $query->whereRaw('lower(status) like ?', ["%{$keyword}%"]);
         }
 
-        $query->orderBy($pagination['sort'] ?? 'id_plano_contratacao', $pagination['sort_direction'] ?? 'asc');
+        $query->orderBy($pagination['sort'] ?? 'valor_total', $pagination['sort_direction'] ?? 'asc');
         return $query->paginate($pagination['per_page'] ?? 10, $columns, 'page', $pagination['current_page'] ?? 1);
     }
 
@@ -111,7 +112,7 @@ class ItemContratacaoRepository implements ItemContratacaoContract
                 'valor_total' => $params['valor_total'],
                 'data_desejada' => $params['data_desejada'],
                 'classificacao' => $params['classificacao'],
-                'status' => $params['status']
+                'status' => 'e'
             ]);
             $itemContratacao->save();
 

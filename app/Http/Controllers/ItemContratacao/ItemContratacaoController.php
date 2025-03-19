@@ -7,6 +7,7 @@ use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use App\Databases\Contracts\ItemContratacaoContract;
 use App\Http\Requests\ItemContratacaoRequest;
+use phpDocumentor\Reflection\Types\Integer;
 
 class ItemContratacaoController extends Controller
 {
@@ -32,9 +33,13 @@ class ItemContratacaoController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-     public function list(Request $request): JsonResponse
+     public function list($id,Request $request): JsonResponse
     {
-        $dados = $this->itemContratacaoRepository->paginate($request->all())->toArray();
+        $requestData = array_merge($request->all(), ['id_plano_contratacao' => $id]);
+
+        // Busca os dados paginados com os filtros atualizados
+        $dados = $this->itemContratacaoRepository->paginate($requestData)->toArray();
+
         $dados['filter_options'] = [
             'id_plano_contratacao' => [
                 'type' => 'text',

@@ -2,7 +2,7 @@
     <thead v-if="ready" :id="`head_${table}`">
     <tr class="table-header bg-gray-200">
         <th v-for="header in columns" :key="header.name" :class="header.headerClass"
-            :style="{width: header.width || 'auto'}" class="whitespace-nowrap px-3 py-3 text-left text-md font-bold text-black-700   tracking-wider">
+            :style="{width: header.width || 'auto'}" class="whitespace-nowrap px-3 py-3 text-left text-sm font-bold text-black-700   tracking-wider">
             <div v-if="!header.checkbox" class="block">
                 {{ header.title }}
                 <span @click="sort(header)" class="ml-1 cursor-pointer"

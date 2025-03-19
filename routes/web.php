@@ -63,7 +63,7 @@ Route::group(['prefix' => 'plano-contratacao','middleware' => ['auth','setor']],
 });
 Route::group(['prefix' => 'item-contratacao'], function () {
     Route::get('/', [ItemContratacaoController::class, 'index'])->name('item_contratacao.index');
-    Route::get('/list', [ItemContratacaoController::class, 'list'])->name('item_contratacao.list');
+    Route::get('/{id}/list', [ItemContratacaoController::class, 'list'])->name('item_contratacao.list');
     Route::get('/{id}', [ItemContratacaoController::class, 'edit'])->name('item_contratacao.edit');
     Route::post('/', [ItemContratacaoController::class, 'create'])->name('item_contratacao.create');
     Route::post('/{id}', [ItemContratacaoController::class, 'update'])->name('item_contratacao.update');
