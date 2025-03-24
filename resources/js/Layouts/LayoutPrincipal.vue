@@ -42,6 +42,7 @@
 
             <!-- Conteúdo da página -->
             <main class="page-content">
+                <confirmation-popup></confirmation-popup>
               <popup></popup>
                 <slot></slot>
             </main>
@@ -66,6 +67,7 @@
 import { ref, computed, inject, onMounted } from 'vue';
 import SidebarMenu from './SidebarMenu.vue';
 import Popup from "@/Components/Popup.vue";
+import ConfirmationPopup from "@/components/laravel-vue-crud/ConfirmationPopup.vue";
 // Refs para o estado do componente
 const sidebarCollapsed = ref(false);
 const sidebarVisible = ref(false);

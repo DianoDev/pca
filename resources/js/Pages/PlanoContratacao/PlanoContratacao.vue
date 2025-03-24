@@ -190,13 +190,7 @@
 
                         <!-- Datatable para Itens de Contratação -->
                         <div class="overflow-x-auto">
-                            <datatable
-                                id="itens-contratacao"
-                                :columns="columnsContratacao"
-                                @delete="confirmRemoveItem('contratacao', $event.id)"
-                                :source="sourceContratacao"
-                                ref="datatableContratacao"
-                            ></datatable>
+                           <ItemContratacaoGrid></ItemContratacaoGrid>
                         </div>
                     </div>
 
@@ -219,13 +213,7 @@
 
                         <!-- Datatable para Itens de Prorrogação -->
                         <div class="overflow-x-auto">
-                            <datatable
-                                id="itens-prorrogacao"
-                                :columns="columnsProrrogacao"
-                                @delete="confirmRemoveItem('prorrogacao', $event.id)"
-                                :source="sourceProrrogacao"
-                                ref="datatableProrrogacao"
-                            ></datatable>
+                            <ItemProrrogacaoGrid></ItemProrrogacaoGrid>
                         </div>
                     </div>
                 </div>
@@ -240,9 +228,9 @@
 <script setup>
 import {ref, inject, computed, onMounted, watch} from 'vue';
 import PopupButton from "@/Components/PopupButton.vue";
-import PopupIcon from "@/Components/PopupIcon.vue";
-import Datatable from "@/Components/datatable/Datatable.vue";
 import LayoutPrincipal from "@/Layouts/LayoutPrincipal.vue";
+import ItemContratacaoGrid from "@/Pages/ItemContratacao/ItemContratacaoGrid.vue";
+import ItemProrrogacaoGrid from "@/Pages/ItemProrrogacao/ItemProrrogacaoGrid.vue";
 
 const events = inject('events');
 
@@ -252,15 +240,6 @@ const selectedYear = ref(currentYear);
 const yearsWithPlans = ref([]);
 const ready = ref(false);
 const hasPlanForSelectedYear = ref(false);
-
-// Referências para os datatables
-const datatableContratacao = ref(null);
-const datatableProrrogacao = ref(null);
-
-// Source URLs para os datatables
-const sourceContratacao = ref('');
-const sourceProrrogacao = ref('');
-
 // Available years for tabs (current year, next year, and years with plans)
 const availableYears = computed(() => {
     // Start with an empty array
@@ -309,113 +288,6 @@ const getDiasRestantesClass = (dias) => {
         return 'text-green-600';
     }
 };
-// Datatable columns para Itens de Contratação
-const columnsContratacao = ref([
-    {
-        name: 'descricao',
-        title: 'Descrição',
-        width: '25%',
-        sort: 'descricao',
-        nowrap: true,
-        formatter: (value) => {
-            return value && value.length > 20 ?
-                `<span title="${value.replace(/"/g, '&quot;')}">${value.substring(0, 20)}...</span>` :
-                value;
-        }
-    },
-    {
-        name: 'valor_total',
-        title: 'Valor Total',
-        width: '15%',
-        sort: 'valor_total',
-        nowrap: true,
-        formatter: (value) => {
-            return value ? `R$ ${parseFloat(value).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : '';
-        }
-    },
-    {
-        name: 'classificacao', title: 'Classificação', width: '15%', sort: 'classificacao', nowrap: true,
-        formatter: (value) => {
-            return formatClassificacao(value);
-        }
-    },
-    {
-        name: 'status',
-        title: 'Status',
-        width: '15%',
-        sort: 'status',
-        nowrap: true,
-        formatter: (value) => {
-            return `<span class="inline-flex px-2 py-1 text-xs font-medium rounded-full text-white ${getStatusBadgeColor(value)}">${formatStatus(value)}</span>`;
-        }
-    },
-    {
-        name: 'id',
-        title: 'Ação',
-        width: '10%',
-        nowrap: true,
-        contentClass: 'text-center',
-        formatter: (value, row) => {
-            let output = "";
-            if (row.status !== 'A') {
-                output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Editar" data-action="popup" data-size="xl" data-component="ItemContratacaoForm" data-title="Editar Item de Contratação" class="mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-pencil text-blue-600"></i></a>`;
-                output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Remover" data-action="delete" class="action mx-0 action-delete tooltip tooltip--top"><i class="fa fa-trash mx-1 text-blue-600"></i></a>`;
-            }
-            return output;
-        }
-    }
-]);
-
-// Datatable columns para Itens de Prorrogação
-const columnsProrrogacao = ref([
-    {
-        name: 'objeto',
-        title: 'Objeto',
-        width: '25%',
-        sort: 'objeto',
-        nowrap: true,
-        formatter: (value) => {
-            return value && value.length > 40 ?
-                `<span title="${value.replace(/"/g, '&quot;')}">${value.substring(0, 40)}...</span>` :
-                value;
-        }
-    },
-    {name: 'numero', title: 'Número', width: '15%', sort: 'numero', nowrap: true},
-    {
-        name: 'valor_global',
-        title: 'Valor Global',
-        width: '15%',
-        sort: 'valor_global',
-        nowrap: true,
-        formatter: (value) => {
-            return value ? `R$ ${parseFloat(value).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : '';
-        }
-    },
-    {
-        name: 'status',
-        title: 'Status',
-        width: '15%',
-        sort: 'status',
-        nowrap: true,
-        formatter: (value) => {
-            return `<span class="inline-flex px-2 py-1 text-xs font-medium rounded-full text-white ${getStatusBadgeColor(value)}">${formatStatusContrato(value)}</span>`;
-        }
-    },
-    {
-        name: 'id',
-        title: 'Ação',
-        width: '10%',
-        nowrap: true,
-        formatter: (value, row) => {
-            let output = "";
-            if (row.status !== 'A') {
-                output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Editar" data-action="popup" data-size="xl" data-component="ItemProrrogacaoForm" data-title="Editar Item de Prorrogação" class="mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-pencil text-blue-600"></i></a>`;
-                output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Remover" data-action="delete" class="action mx-0 action-delete tooltip tooltip--top"><i class="fa fa-trash mx-1 text-blue-600"></i></a>`;
-            }
-            return output;
-        }
-    }
-]);
 
 // Função para formatar o status
 const formatStatus = (status) => {
@@ -433,20 +305,6 @@ const formatStatus = (status) => {
     }
 };
 
-const formatStatusContrato = (status) => {
-    switch (status) {
-        case 'E':
-            return 'Pendente Aprovação';
-        case 'A':
-            return 'Aprovado';
-        case 'R':
-            return 'Reprovado';
-        case 'I':
-            return 'Iniciado';
-        default:
-            return status || 'Não definido';
-    }
-};
 
 // Funções para definir cores baseadas no status do plano
 const getStatusBackgroundColor = (status) => {
@@ -528,7 +386,7 @@ const getStatusIcon = (status) => {
 // Set selected year and force table reload
 const setSelectedYear = async (year) => {
     selectedYear.value = year;
-    events.emit('loading', true);
+    events.emit('reload-item-grid', year);
     // Primeiro verifica se existe um plano para o ano selecionado
     await checkPlanExistence();
     // Após verificar a existência do plano, os datatables serão atualizados automaticamente
@@ -559,78 +417,9 @@ const checkPlanExistence = async () => {
         events.emit('loading', true);
         const response = await axios.get(`/plano-contratacao/exists?exercicio=${selectedYear.value}`);
         hasPlanForSelectedYear.value = response.data.exists;
-
-        if (hasPlanForSelectedYear.value) {
-            // Atualiza as URLs de origem para os datatables
-            sourceContratacao.value = `/item-contratacao/${hasPlanForSelectedYear.value.id}/list`;
-            sourceProrrogacao.value = `/item-prorrogacao/${hasPlanForSelectedYear.value.id}/list`;
-
-            // Recarrega os datatables se já estiverem inicializados
-            if (datatableContratacao.value) {
-                events.emit('table-reload', 'itens-contratacao');
-            }
-            if (datatableProrrogacao.value) {
-                events.emit('table-reload', 'itens-prorrogacao');
-            }
-        }
     } catch (error) {
         console.error('Erro ao verificar existência do plano:', error);
         hasPlanForSelectedYear.value = false;
-    } finally {
-        events.emit('loading', false);
-    }
-};
-
-// Formatação de valores
-const formatDate = (dateString) => {
-    if (!dateString) return 'Não informado';
-    const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
-    return new Date(dateString).toLocaleDateString('pt-BR', options);
-};
-
-const formatClassificacao = (value) => {
-    switch (value) {
-        case 'A4':
-            return 'Material de Consumo';
-        case 'A5':
-            return 'Material Permanente';
-        case 'A1':
-            return 'Serviços Pessoa Física';
-        case 'A2':
-            return 'Serviços de TI';
-        case 'A3':
-            return 'Serviços Pessoa Jurídica';
-        default:
-            return value || 'Não classificado';
-    }
-};
-
-// Delete confirmation
-const confirmRemoveItem = async (type, id) => {
-    if (!confirm(`Tem certeza que deseja excluir este item de ${type === 'contratacao' ? 'contratação' : 'prorrogação'}?`)) {
-        return;
-    }
-
-    events.emit('loading', true);
-
-    try {
-        if (type === 'contratacao') {
-            await axios.delete(`/item-contratacao/${id}`);
-            events.emit('table-reload', 'itens-contratacao');
-        } else {
-            await axios.delete(`/item-prorrogacao/${id}`);
-            events.emit('table-reload', 'itens-prorrogacao');
-        }
-
-        events.emit('notification', {
-            type: 'success',
-            message: `Item de ${type === 'contratacao' ? 'contratação' : 'prorrogação'} excluído com sucesso.`
-        });
-    } catch (err) {
-        events.emit('notification', {
-            type: 'error',
-            message: err.response?.data?.message || 'Não foi possível excluir o registro.'
-        });
     } finally {
         events.emit('loading', false);
     }
@@ -640,8 +429,6 @@ const confirmRemoveItem = async (type, id) => {
 onMounted(async () => {
     await fetchYearsWithPlans();
     ready.value = true;
-
-    // Listen for form submission to refresh the data
     events.on('reload-plano', async () => {
         await checkPlanExistence();
         await fetchYearsWithPlans();

@@ -112,7 +112,7 @@ class ItemContratacaoRepository implements ItemContratacaoContract
                 'valor_total' => $params['valor_total'],
                 'data_desejada' => $params['data_desejada'],
                 'classificacao' => $params['classificacao'],
-                'status' => 'e'
+                'status' => 'E'
             ]);
             $itemContratacao->save();
 

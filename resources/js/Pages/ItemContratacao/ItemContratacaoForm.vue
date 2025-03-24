@@ -10,25 +10,25 @@
                     rows="4"
                     :disabled="readOnly"
                 ></textarea>
-                <InputError :message="form.errors.descricao"/>
+                <InputError :message="errors.descricao"/>
             </div>
 
             <div class="mb-4">
                 <InputLabel for="unidade_medida" value="Unidade de Medida" class="required"/>
                 <TextInput id="unidade_medida" class="w-full" v-model="form.unidade_medida" :disabled="readOnly"/>
-                <InputError :message="form.errors.unidade_medida"/>
+                <InputError :message="errors.unidade_medida"/>
             </div>
 
             <div class="mb-4">
                 <InputLabel for="quantidade" value="Quantidade" class="required"/>
-                <TextInput id="quantidade" type="number" class="w-full" v-model="form.quantidade" :disabled="readOnly"/>
-                <InputError :message="form.errors.quantidade"/>
+                <TextInput id="quantidade" type="number" class="w-full" v-model.string="form.quantidade" :disabled="readOnly"/>
+                <InputError :message="errors.quantidade"/>
             </div>
 
             <div class="mb-4">
                 <InputLabel for="valor_unitario_estimado" value="Valor Unitário Estimado" class="required"/>
-                <TextInput id="valor_unitario_estimado" type="number" step="0.01" class="w-full" v-model="form.valor_unitario_estimado" :disabled="readOnly"/>
-                <InputError :message="form.errors.valor_unitario_estimado"/>
+                <TextInput id="valor_unitario_estimado" type="number" step="0.01" class="w-full" v-model.string="form.valor_unitario_estimado" :disabled="readOnly"/>
+                <InputError :message="errors.valor_unitario_estimado"/>
             </div>
 
             <div class="mb-4">
@@ -42,13 +42,13 @@
                     style="cursor: not-allowed;"
                     tabindex="-1"
                 />
-                <InputError :message="form.errors.valor_total"/>
+                <InputError :message="errors.valor_total"/>
             </div>
 
             <div class="mb-4">
                 <InputLabel for="data_desejada" value="Data Desejada" class="required"/>
                 <TextInput id="data_desejada" type="date" class="w-full" v-model="form.data_desejada" :disabled="readOnly"/>
-                <InputError :message="form.errors.data_desejada"/>
+                <InputError :message="errors.data_desejada"/>
             </div>
 
             <div class="mb-4">
@@ -66,7 +66,7 @@
                     <option value="A2">ND 33.90.37 - Serviços de TI</option>
                     <option value="A3">ND 33.90.39 - Serviços Pessoa Jurídica</option>
                 </select>
-                <InputError :message="form.errors.classificacao"/>
+                <InputError :message="errors.classificacao"/>
             </div>
 
             <div class="w-full border-t border-gray-200 pt-4 mt-4">
@@ -81,11 +81,11 @@
                     <button
                         type="submit"
                         class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                        :disabled="form.processing"
+                        :disabled="processing"
                     >
-                        <i v-if="!form.processing" class="fa fa-check mr-1"></i>
+                        <i v-if="!processing" class="fa fa-check mr-1"></i>
                         <i v-else class="fa fa-spinner fa-spin mr-1"></i>
-                        {{ form.processing ? 'Salvando...' : 'Salvar' }}
+                        {{ processing ? 'Salvando...' : 'Salvar' }}
                     </button>
                     <button type="button"
                             class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
@@ -100,11 +100,10 @@
 
 
 <script setup>
-import {inject, onMounted, ref, watch} from 'vue';
+import { inject, onMounted, ref, watch } from 'vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-import {useForm} from '@inertiajs/vue3';
 
 const props = defineProps({
     data: {
@@ -116,7 +115,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'notification']);
 const events = inject('events');
-const form = useForm({
+const form = ref({
     id_plano_contratacao: '',
     descricao: '',
     unidade_medida: '',
@@ -127,33 +126,72 @@ const form = useForm({
     classificacao: '',
     status: '',
 });
+const errors = ref({});
+const processing = ref(false);
 const ready = ref(false);
 const readOnly = ref(false);
 
 // Calcular valor total quando quantidade ou valor unitário mudar
-watch([() => form.quantidade, () => form.valor_unitario_estimado], ([novaQuantidade, novoValorUnitario]) => {
+watch([
+    () => form.value.quantidade,
+    () => form.value.valor_unitario_estimado
+], ([novaQuantidade, novoValorUnitario]) => {
     if (novaQuantidade && novoValorUnitario) {
-        form.valor_total = (parseFloat(novaQuantidade) * parseFloat(novoValorUnitario)).toFixed(2);
+        form.value.valor_total = (parseFloat(novaQuantidade) * parseFloat(novoValorUnitario)).toFixed(2);
     } else {
-        form.valor_total = '';
+        form.value.valor_total = '';
     }
 });
 
 function submit() {
-    form.post('/item-contratacao/', {
-        onSuccess: () => handleSuccess('Item Contratação criado com sucesso!'),
-        onError: () => handleError()
-    });
+    processing.value = true;
+
+    // Garantir que os valores numéricos estejam no formato correto para o servidor
+    const formData = {
+        ...form.value,
+        quantidade: form.value.quantidade ? String(form.value.quantidade) : '',
+        valor_unitario_estimado: form.value.valor_unitario_estimado ? String(form.value.valor_unitario_estimado) : '',
+        valor_total: form.value.valor_total ? String(form.value.valor_total) : ''
+    };
+
+    if (props.data?.id) {
+        // Rota de update
+        axios.post(`/item-contratacao/${props.data.id}`, form.value)
+            .then(response => {
+                handleSuccess('Plano Contratação atualizado com sucesso!');
+                processing.value = false;
+            })
+            .catch(error => {
+                if (error.response && error.response.data.errors) {
+                    errors.value = error.response.data.errors;
+                }
+                handleError();
+                processing.value = false;
+            });
+    } else {
+        // Rota de criação
+        axios.post('/item-contratacao', form.value)
+            .then(response => {
+                handleSuccess('Plano Contratação criado com sucesso!');
+                processing.value = false;
+            })
+            .catch(error => {
+                if (error.response && error.response.data.errors) {
+                    errors.value = error.response.data.errors;
+                }
+                handleError();
+                processing.value = false;
+            });
+    }
 }
 
 function handleSuccess(message) {
-    events.emit('table-reload', true);
     events.emit('notification', {
         type: 'success',
         message: message
     });
-    events.emit('form-submitted', true);
-    events.emit('popup-close', true);
+    events.emit('table-reload', true);
+    close();
 }
 
 function handleError() {
@@ -161,21 +199,25 @@ function handleError() {
         type: 'error',
         message: 'Ocorreu um erro ao salvar o Item Contratação.'
     });
-    events.emit('form-submitted', false);
+    events.emit('reload-plano', false);
 }
 
 const loadData = async () => {
     try {
         const response = await axios.get(`/item-contratacao/${props.data.id}`);
         // Set form data
-        form.descricao = response.data.descricao || '';
-        form.unidade_medida = response.data.unidade_medida || '';
-        form.quantidade = response.data.quantidade || '';
-        form.valor_unitario_estimado = response.data.valor_unitario_estimado || '';
-        form.valor_total = response.data.valor_total || '';
-        form.data_desejada = response.data.data_desejada || '';
-        form.classificacao = response.data.classificacao || '';
-        form.status = response.data.status || '';
+        const data = response.data;
+        form.value = {
+            id_plano_contratacao: data.id_plano_contratacao ? String(data.id_plano_contratacao) : '',
+            descricao: data.descricao || '',
+            unidade_medida: data.unidade_medida || '',
+            quantidade: data.quantidade ? String(data.quantidade) : '',
+            valor_unitario_estimado: data.valor_unitario_estimado ? String(data.valor_unitario_estimado) : '',
+            valor_total: data.valor_total ? String(data.valor_total) : '',
+            data_desejada: data.data_desejada || '',
+            classificacao: data.classificacao || '',
+            status: data.status || ''
+        };
 
         readOnly.value = Boolean(props.data.readOnly);
     } catch (err) {
@@ -194,7 +236,7 @@ const close = () => {
 }
 
 onMounted(async () => {
-    console.log(props.data)
+    console.log(props.data);
     events.off("form-submitted");
     events.on("form-submitted", (sucesso) => {
         if (sucesso) {
@@ -202,11 +244,10 @@ onMounted(async () => {
         }
     });
 
-
     if (props.data?.id) {
         await loadData();
     } else {
-        form.id_plano_contratacao = props.data.id_plano;
+        form.value.id_plano_contratacao = props.data.id_plano ? String(props.data.id_plano) : '';
         ready.value = true;
     }
 });
