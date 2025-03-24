@@ -1,8 +1,14 @@
 <template>
     <thead v-if="ready" :id="`head_${table}`">
     <tr class="table-header bg-gray-200">
-        <th v-for="header in columns" :key="header.name" :class="header.headerClass"
-            :style="{width: header.width || 'auto'}" class="whitespace-nowrap px-3 py-3 text-left text-sm font-bold text-black-700   tracking-wider">
+        <th v-for="(header, index) in columns"
+            :key="header.name"
+            :class="[
+                header.headerClass,
+                'whitespace-nowrap px-3 py-3 text-left text-sm font-bold text-black-g00 tracking-wider',
+                { 'rounded-tl-lg': index === 0, 'rounded-tr-lg': index === columns.length - 1 }
+            ]"
+            :style="{width: header.width || 'auto'}">
             <div v-if="!header.checkbox" class="block">
                 {{ header.title }}
                 <span @click="sort(header)" class="ml-1 cursor-pointer"

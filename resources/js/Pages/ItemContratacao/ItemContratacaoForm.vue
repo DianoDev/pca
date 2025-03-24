@@ -166,7 +166,7 @@ function handleError() {
 
 const loadData = async () => {
     try {
-        const response = await axios.get(`/item-contratacao/${props.data.id_plano}`);
+        const response = await axios.get(`/item-contratacao/${props.data.id}`);
         // Set form data
         form.descricao = response.data.descricao || '';
         form.unidade_medida = response.data.unidade_medida || '';

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ItemProrrogacao\ItemProrrogacaoController;
 use App\Http\Controllers\ItemContratacao\ItemContratacaoController;
 use App\Http\Controllers\PlanoContratacao\PlanoContratacaoController;
 use App\Http\Controllers\Auth\AuthController;
@@ -68,4 +69,13 @@ Route::group(['prefix' => 'item-contratacao'], function () {
     Route::post('/', [ItemContratacaoController::class, 'create'])->name('item_contratacao.create');
     Route::post('/{id}', [ItemContratacaoController::class, 'update'])->name('item_contratacao.update');
     Route::delete('/{id}', [ItemContratacaoController::class, 'delete'])->name('item_contratacao.delete');
+});
+
+Route::group(['prefix' => 'item-prorrogacao'], function () {
+    Route::get('/', [ItemProrrogacaoController::class, 'index'])->name('item_prorrogacao.index');
+    Route::get('/{id}/list', [ItemProrrogacaoController::class, 'list'])->name('item_prorrogacao.list');
+    Route::get('/{id}', [ItemProrrogacaoController::class, 'edit'])->name('item_prorrogacao.edit');
+    Route::post('/', [ItemProrrogacaoController::class, 'create'])->name('item_prorrogacao.create');
+    Route::post('/{id}', [ItemProrrogacaoController::class, 'update'])->name('item_prorrogacao.update');
+    Route::delete('/{id}', [ItemProrrogacaoController::class, 'delete'])->name('item_prorrogacao.delete');
 });
