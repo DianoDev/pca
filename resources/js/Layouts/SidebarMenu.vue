@@ -48,40 +48,13 @@
                             </a>
                         </li>
 
-                        <li class="menu-item" :class="{ 'active': isActive('contratos') }">
+                        <li v-if="setorInfo.tem_setor_filho !== 'N' " class="menu-item" :class="{ 'active': isActive('contratos') }">
                             <a href="/plano-contratacao" class="menu-link">
                                 <span class="menu-icon">
                                     <i class="fa fa-book-bookmark"></i>
                                 </span>
                                 <span class="menu-title">Plano Contratação TCE</span>
                             </a>
-                        </li>
-
-                        <!-- Item com submenu -->
-                        <li class="menu-item sub-menu" :class="{ 'open': openSubmenus.includes('config') }">
-                            <a href="#" class="menu-link" @click.prevent="toggleSubmenu('config')">
-                                <span class="menu-icon">
-                                  <i class="fa fa-gear"></i>
-                                </span>
-                                <span class="menu-title">Configurações</span>
-                                <span class="menu-arrow">
-                                  <i :class="['fa', openSubmenus.includes('config') ? 'fa-chevron-down' : 'fa-chevron-right']"></i>
-                                </span>
-                            </a>
-                            <div class="sub-menu-list" :style="getSubmenuStyle('config')">
-                                <ul>
-                                    <li class="menu-item" :class="{ 'active': isActive('config-geral') }">
-                                        <a href="/configuracoes/geral" class="menu-link">
-                                            <span class="menu-title">Geral</span>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item" :class="{ 'active': isActive('config-perfil') }">
-                                        <a href="/configuracoes/perfil" class="menu-link">
-                                            <span class="menu-title">Perfil</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
                         </li>
 
                         <!-- Item com submenu -->
@@ -115,6 +88,16 @@
                                 </ul>
                             </div>
                         </li>
+
+                        <!-- Logout (Novo item adicionado) -->
+                        <li class="menu-item mt-auto border-t border-gray-200 pt-2">
+                            <a href="#" @click.prevent="logout" class="menu-link text-red-600 hover:bg-red-50">
+                                <span class="menu-icon">
+                                    <i class="fa fa-sign-out-alt"></i>
+                                </span>
+                                <span class="menu-title">Sair</span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -130,21 +113,33 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, defineEmits } from 'vue';
-
-// Define emits
+import { ref, nextTick, onMounted, defineEmits, computed } from 'vue';
+import { usePage, router } from '@inertiajs/vue3'; // Adicionado "router" para fazer o logout
 const emit = defineEmits(['collapse-changed', 'toggle-changed', 'submenu-clicked']);
-
-// Estados reativos
 const collapsed = ref(false);
 const toggled = ref(false);
 const activeItem = ref('dashboard');
 const openSubmenus = ref([]);
 const submenuHeights = ref({});
+const setorInfo = ref({});
+
+// Função de logout
+const logout = () => {
+    router.post('/logout', {}, {
+        preserveScroll: true,
+        onSuccess: () => {
+            // Opcional: redirecionar para uma página específica
+            window.location.href = '/login';
+        }
+    });
+};
 
 // Determina o item ativo com base na URL atual
 onMounted(() => {
-    // Detecta a rota atual
+    const page = usePage();
+    setorInfo.value = computed(() => page.props.setor_info);
+    setorInfo.value = setorInfo.value.value;
+
     const path = window.location.pathname;
 
     if (path.includes('dashboard')) {
@@ -314,6 +309,8 @@ defineExpose({
 .sidebar-content {
     flex-grow: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-footer {
@@ -331,6 +328,15 @@ defineExpose({
 /* Estilos do menu */
 .menu {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.menu ul {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .menu-item {

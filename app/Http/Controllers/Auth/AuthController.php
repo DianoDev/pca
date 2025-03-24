@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Databases\Models\SetorPCA;
 use App\Databases\Models\UsuarioSetor;
 use App\Databases\Models\VwSetorGestor;
 use App\Http\Controllers\Controller;
@@ -31,10 +32,12 @@ class AuthController extends Controller
         ]);
     }
 
-    public function seleciona(Request $request): Response
+    public function seleciona(Request $request): \Illuminate\Http\RedirectResponse
     {
         $codigoSetor = $request->input('codigo_setor');
         $request->session()->put('setor', $codigoSetor);
-        return Inertia::render('Dashboard/Dashboard', []);
+        $setor_info = SetorPCA::query()->where('codigo_setor','=', $codigoSetor)->first();
+        $request->session()->put('setor_info', $setor_info);
+        return redirect()->route('dashboard');
     }
 }

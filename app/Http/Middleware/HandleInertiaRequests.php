@@ -30,11 +30,13 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $setor_info = session()->get('setor_info');
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
             ],
+            'setor_info' => $setor_info,
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
