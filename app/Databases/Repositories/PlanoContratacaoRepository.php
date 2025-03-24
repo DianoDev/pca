@@ -100,7 +100,7 @@ class PlanoContratacaoRepository implements PlanoContratacaoContract
                 'exercicio' => $params['exercicio'],
                 'email' => $params['email'],
                 'telefone' => $params['telefone'],
-                'status' => 'I'
+                'status' => 'E'
             ]);
             $planoContratacao->save();
 

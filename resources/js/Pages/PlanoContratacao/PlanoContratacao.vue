@@ -65,19 +65,23 @@
                                 <!-- Primeira coluna - Setor e Gestor -->
                                 <div>
                                     <div class="flex items-start mb-4">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                                             <i class="fa fa-building text-gray-500"></i>
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-500">Setor Responsável</h4>
                                             <p class="text-base font-semibold text-gray-800">
-                                                {{ hasPlanForSelectedYear.gestor?.nome_setor_formatado || 'Não informado' }}
+                                                {{
+                                                    hasPlanForSelectedYear.gestor?.nome_setor_formatado || 'Não informado'
+                                                }}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div class="flex items-start">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                                             <i class="fa fa-user text-gray-500"></i>
                                         </div>
                                         <div>
@@ -92,20 +96,25 @@
                                 <!-- Segunda coluna - Exercício e Contato -->
                                 <div class="border-t md:border-t-0 md:border-l border-gray-200 md:pl-6 pt-4 md:pt-0">
                                     <div class="flex items-start mb-4">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                                             <i class="fa fa-calendar text-gray-500"></i>
                                         </div>
                                         <div class="">
                                             <h4 class="text-sm font-medium text-gray-500">Data Encerramento</h4>
-                                            <p class="text-base font-semibold text-gray-800">30 de Abril de {{ selectedYear }}</p>
+                                            <p class="text-base font-semibold text-gray-800">30 de Abril de
+                                                {{ selectedYear }}</p>
                                             <p class="text-sm text-yellow-600">
-                                                {{ diasRestantes > 0 ? `Faltam ${diasRestantes} dias` : 'Prazo encerrado' }}
+                                                {{
+                                                    diasRestantes > 0 ? `Faltam ${diasRestantes} dias` : 'Prazo encerrado'
+                                                }}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div class="flex items-start">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                                             <i class="fa fa-envelope text-gray-500"></i>
                                         </div>
                                         <div>
@@ -123,7 +132,8 @@
                                 <!-- Terceira coluna - Status e Valor Total -->
                                 <div class="border-t md:border-t-0 md:border-l border-gray-200 md:pl-6 pt-4 md:pt-0">
                                     <div class="flex items-start mb-4">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                                             <i class="fa fa-check-circle text-gray-500"></i>
                                         </div>
                                         <div>
@@ -140,13 +150,16 @@
                                     </div>
 
                                     <div class="flex items-start">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
                                             <i class="fa fa-money-bill-wave text-gray-500"></i>
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-500">Valor Total</h4>
                                             <p class="text-base font-semibold text-blue-600">
-                                                {{ hasPlanForSelectedYear.valor_total ? `R$ ${parseFloat(hasPlanForSelectedYear.valor_total).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 'Não informado' }}
+                                                {{
+                                                    hasPlanForSelectedYear.valor_total ? `R$ ${parseFloat(hasPlanForSelectedYear.valor_total).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 'Não informado'
+                                                }}
                                             </p>
                                         </div>
                                     </div>
@@ -156,7 +169,8 @@
                     </div>
                 </div>
 
-                <div v-if="hasPlanForSelectedYear" class="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-6">
+                <div v-if="hasPlanForSelectedYear"
+                     class="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-6">
                     <!-- Seção de Itens de Contratação -->
                     <div class="w-full md:w-1/2 bg-white p-6 rounded-lg shadow-md">
                         <div class="flex items-center justify-between mb-4">
@@ -319,7 +333,8 @@ const columnsContratacao = ref([
             return value ? `R$ ${parseFloat(value).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : '';
         }
     },
-    {name: 'classificacao', title: 'Classificação', width: '15%', sort: 'classificacao', nowrap: true,
+    {
+        name: 'classificacao', title: 'Classificação', width: '15%', sort: 'classificacao', nowrap: true,
         formatter: (value) => {
             return formatClassificacao(value);
         }
@@ -339,7 +354,7 @@ const columnsContratacao = ref([
         title: 'Ação',
         width: '10%',
         nowrap: true,
-        contentClass:'text-center',
+        contentClass: 'text-center',
         formatter: (value, row) => {
             let output = "";
             if (row.status !== 'A') {
@@ -627,11 +642,9 @@ onMounted(async () => {
     ready.value = true;
 
     // Listen for form submission to refresh the data
-    events.on('form-submitted', async (success) => {
-        if (success) {
-            await checkPlanExistence();
-            await fetchYearsWithPlans();
-        }
+    events.on('reload-plano', async () => {
+        await checkPlanExistence();
+        await fetchYearsWithPlans();
     });
 });
 </script>
