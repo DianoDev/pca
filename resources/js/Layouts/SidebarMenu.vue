@@ -39,7 +39,7 @@
                         </li>
 
                         <!-- Contratos -->
-                        <li class="menu-item" :class="{ 'active': isActive('contratos') }">
+                        <li class="menu-item" :class="{ 'active': isActive('plano-contratacao-setor') }">
                             <a href="/plano-contratacao-setor" class="menu-link">
                                 <span class="menu-icon">
                                     <i class="fa fa-file-contract"></i>
@@ -151,8 +151,8 @@ onMounted(() => {
         activeItem.value = 'dashboard';
     } else if (path.includes('organograma')) {
         activeItem.value = 'organograma';
-    } else if (path.includes('contratos')) {
-        activeItem.value = 'contratos';
+    } else if (path.includes('plano-contratacao-setor')) {
+        activeItem.value = 'plano-contratacao-setor';
     } else if (path.includes('configuracoes/geral')) {
         activeItem.value = 'config-geral';
         openSubmenus.value.push('config');
