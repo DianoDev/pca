@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\PlanoContratacao;
 
-use App\Databases\Contracts\PlanoContratacaoContract;
+use App\Databases\Contracts\PlanoContratacaoSetorContract;
 use App\Databases\Contracts\UsuarioSetorContract;
 use App\Databases\Models\VwSetorGestor;
 use App\Http\Requests\UsuarioSetorRequest;
@@ -13,13 +13,13 @@ use App\Databases\Models\PlanoContratacao;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
-class PlanoContratacaoController extends Controller
+class PlanoContratacaoSetorController extends Controller
 {
     /**
      * Constructor
-     * @param PlanoContratacaoContract $planoContratacaoRepository
+     * @param PlanoContratacaoSetorContract $planoContratacaoRepository
      */
-    public function __construct(private readonly PlanoContratacaoContract $planoContratacaoRepository)
+    public function __construct(private readonly PlanoContratacaoSetorContract $planoContratacaoRepository)
     {
     }
     /**

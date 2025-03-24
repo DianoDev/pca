@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ItemProrrogacao\ItemProrrogacaoController;
 use App\Http\Controllers\ItemContratacao\ItemContratacaoController;
-use App\Http\Controllers\PlanoContratacao\PlanoContratacaoController;
+use App\Http\Controllers\PlanoContratacao\PlanoContratacaoSetorController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Organograma\OrganogramaController;
 use App\Http\Controllers\UsuarioSetor\UsuarioSetorController;
@@ -53,14 +53,14 @@ Route::group(['prefix' => 'setor','middleware' => ['auth']], function () {
 require __DIR__.'/auth.php';
 
 Route::group(['prefix' => 'plano-contratacao-setor','middleware' => ['auth','setor']], function () {
-    Route::get('/', [PlanoContratacaoController::class, 'index'])->name('plano_contratacao.index');
-    Route::get('/list', [PlanoContratacaoController::class, 'list'])->name('plano_contratacao.list');
-    Route::get('/years', [PlanoContratacaoController::class, 'getYears'])->name('plano_contratacao.getYears');
-    Route::get('/exists', [PlanoContratacaoController::class, 'exists'])->name('plano_contratacao.exists');
-    Route::get('/gestorInfo', [PlanoContratacaoController::class, 'gestorInfo'])->name('plano_contratacao.edit');
-    Route::post('/', [PlanoContratacaoController::class, 'create'])->name('plano_contratacao.create');
-    Route::post('/{id}', [PlanoContratacaoController::class, 'update'])->name('plano_contratacao.update');
-    Route::delete('/{id}', [PlanoContratacaoController::class, 'delete'])->name('plano_contratacao.delete');
+    Route::get('/', [PlanoContratacaoSetorController::class, 'index'])->name('plano_contratacao.index');
+    Route::get('/list', [PlanoContratacaoSetorController::class, 'list'])->name('plano_contratacao.list');
+    Route::get('/years', [PlanoContratacaoSetorController::class, 'getYears'])->name('plano_contratacao.getYears');
+    Route::get('/exists', [PlanoContratacaoSetorController::class, 'exists'])->name('plano_contratacao.exists');
+    Route::get('/gestorInfo', [PlanoContratacaoSetorController::class, 'gestorInfo'])->name('plano_contratacao.edit');
+    Route::post('/', [PlanoContratacaoSetorController::class, 'create'])->name('plano_contratacao.create');
+    Route::post('/{id}', [PlanoContratacaoSetorController::class, 'update'])->name('plano_contratacao.update');
+    Route::delete('/{id}', [PlanoContratacaoSetorController::class, 'delete'])->name('plano_contratacao.delete');
 });
 Route::group(['prefix' => 'item-contratacao-setor','middleware' => ['auth','setor']], function () {
     Route::get('/', [ItemContratacaoController::class, 'index'])->name('item_contratacao.index');
@@ -78,4 +78,15 @@ Route::group(['prefix' => 'item-prorrogacao-setor','middleware' => ['auth','seto
     Route::post('/', [ItemProrrogacaoController::class, 'create'])->name('item_prorrogacao.create');
     Route::post('/{id}', [ItemProrrogacaoController::class, 'update'])->name('item_prorrogacao.update');
     Route::delete('/{id}', [ItemProrrogacaoController::class, 'delete'])->name('item_prorrogacao.delete');
+});
+
+Route::group(['prefix' => 'plano-contratacao-tce','middleware' => ['auth','setor']], function () {
+    Route::get('/', [PlanoContratacaoTceController::class, 'index'])->name('plano_contratacao.index');
+    Route::get('/list', [PlanoContratacaoSetorController::class, 'list'])->name('plano_contratacao.list');
+    Route::get('/years', [PlanoContratacaoSetorController::class, 'getYears'])->name('plano_contratacao.getYears');
+    Route::get('/exists', [PlanoContratacaoSetorController::class, 'exists'])->name('plano_contratacao.exists');
+    Route::get('/gestorInfo', [PlanoContratacaoSetorController::class, 'gestorInfo'])->name('plano_contratacao.edit');
+    Route::post('/', [PlanoContratacaoSetorController::class, 'create'])->name('plano_contratacao.create');
+    Route::post('/{id}', [PlanoContratacaoSetorController::class, 'update'])->name('plano_contratacao.update');
+    Route::delete('/{id}', [PlanoContratacaoSetorController::class, 'delete'])->name('plano_contratacao.delete');
 });

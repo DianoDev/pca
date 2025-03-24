@@ -1,7 +1,7 @@
 <?php
 namespace App\Databases\Repositories;
 
-use App\Databases\Contracts\PlanoContratacaoContract;
+use App\Databases\Contracts\PlanoContratacaoSetorContract;
 use App\Databases\Models\PlanoContratacao;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
-class PlanoContratacaoRepository implements PlanoContratacaoContract
+class PlanoContratacaoSetorRepository implements PlanoContratacaoSetorContract
 {
     /**
      * Constructor
