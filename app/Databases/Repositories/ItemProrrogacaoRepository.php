@@ -2,7 +2,9 @@
 namespace App\Databases\Repositories;
 
 use App\Databases\Contracts\ItemProrrogacaoContract;
+use App\Databases\Models\ItemContratacao;
 use App\Databases\Models\ItemProrrogacao;
+use App\Databases\Models\PlanoContratacao; // Adicionado modelo do PlanoContratacao
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -80,6 +82,43 @@ class ItemProrrogacaoRepository implements ItemProrrogacaoContract
     }
 
     /**
+     * Calcula e atualiza o valor total do PlanoContratacao
+     * @param int $idPlanoContratacao
+     * @param bool $autoCommit
+     * @return bool
+     * @throws Exception
+     */
+    private function atualizarValorTotalPlano(int $idPlanoContratacao, bool $autoCommit = true): bool
+    {
+        $autoCommit && DB::beginTransaction();
+        try {
+            // Calcular a soma dos valores de todos os itens de contratação do plano
+            $valorTotalItensContratacao = ItemContratacao::query()
+                ->where('id_plano_contratacao', $idPlanoContratacao)
+                ->sum('valor_total');
+
+            // Calcular a soma dos valores de todos os itens de prorrogação do plano
+            $valorTotalItensProrrogacao = ItemProrrogacao::query()
+                ->where('id_plano_contratacao', $idPlanoContratacao)
+                ->sum('valor_global');
+
+            // Valor total do plano é a soma dos dois valores
+            $valorTotalPlano = $valorTotalItensContratacao + $valorTotalItensProrrogacao;
+
+            // Atualizar o valor total no plano de contratação
+            $planoContratacao = PlanoContratacao::findOrFail($idPlanoContratacao);
+            $planoContratacao->valor_total = $valorTotalPlano;
+            $planoContratacao->save();
+
+            $autoCommit && DB::commit();
+            return true;
+        } catch (Exception $ex) {
+            $autoCommit && DB::rollBack();
+            throw new Exception("Erro ao atualizar valor total do plano: " . $ex->getMessage());
+        }
+    }
+
+    /**
      * Cria um novo registro de ItemProrrogacao
      * @param array $params
      * @param bool $autoCommit
@@ -102,6 +141,9 @@ class ItemProrrogacaoRepository implements ItemProrrogacaoContract
             ]);
             $itemProrrogacao->save();
 
+            // Atualizar o valor total do plano sem iniciar uma nova transação
+            $this->atualizarValorTotalPlano((int)$params['id_plano_contratacao'], false);
+
             $autoCommit && DB::commit();
             return true;
         } catch (Exception $ex) {
@@ -122,8 +164,15 @@ class ItemProrrogacaoRepository implements ItemProrrogacaoContract
     {
         $autoCommit && DB::beginTransaction();
         try {
+            // Atualizar o item de prorrogação
             $itemProrrogacao = $this->getById($id);
             $itemProrrogacao->update($params);
+
+            // Obter o ID do plano de contratação
+            $idPlanoContratacao = $itemProrrogacao->id_plano_contratacao;
+
+            // Atualizar o valor total do plano sem iniciar uma nova transação
+            $this->atualizarValorTotalPlano($idPlanoContratacao, false);
 
             $autoCommit && DB::commit();
             return true;
@@ -144,14 +193,21 @@ class ItemProrrogacaoRepository implements ItemProrrogacaoContract
     {
         $autoCommit && DB::beginTransaction();
         try {
+            // Obter o item antes de excluí-lo para ter acesso ao ID do plano
             $itemProrrogacao = $this->getById($id);
+            $idPlanoContratacao = $itemProrrogacao->id_plano_contratacao;
+
+            // Excluir o item
             $itemProrrogacao->delete();
+
+            // Atualizar o valor total do plano sem iniciar uma nova transação
+            $this->atualizarValorTotalPlano($idPlanoContratacao, false);
+
             $autoCommit && DB::commit();
+            return true;
         } catch (Exception $ex) {
             $autoCommit && DB::rollBack();
             throw new Exception($ex->getMessage());
         }
-
-        return true;
     }
 }

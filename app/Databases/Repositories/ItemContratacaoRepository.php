@@ -3,6 +3,8 @@ namespace App\Databases\Repositories;
 
 use App\Databases\Contracts\ItemContratacaoContract;
 use App\Databases\Models\ItemContratacao;
+use App\Databases\Models\ItemProrrogacao;
+use App\Databases\Models\PlanoContratacao; // Adicionado modelo do PlanoContratacao
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -93,6 +95,43 @@ class ItemContratacaoRepository implements ItemContratacaoContract
     }
 
     /**
+     * Calcula e atualiza o valor total do PlanoContratacao
+     * @param int $idPlanoContratacao
+     * @param bool $autoCommit
+     * @return bool
+     * @throws Exception
+     */
+    private function atualizarValorTotalPlano(int $idPlanoContratacao, bool $autoCommit = true): bool
+    {
+        $autoCommit && DB::beginTransaction();
+        try {
+            // Calcular a soma dos valores de todos os itens de contratação do plano
+            $valorTotalItensContratacao = ItemContratacao::query()
+                ->where('id_plano_contratacao', $idPlanoContratacao)
+                ->sum('valor_total');
+
+            // Calcular a soma dos valores de todos os itens de prorrogação do plano
+            $valorTotalItensProrrogacao = ItemProrrogacao::query()
+                ->where('id_plano_contratacao', $idPlanoContratacao)
+                ->sum('valor_global');
+
+            // Valor total do plano é a soma dos dois valores
+            $valorTotalPlano = $valorTotalItensContratacao + $valorTotalItensProrrogacao;
+
+            // Atualizar o valor total no plano de contratação
+            $planoContratacao = PlanoContratacao::findOrFail($idPlanoContratacao);
+            $planoContratacao->valor_total = $valorTotalPlano;
+            $planoContratacao->save();
+
+            $autoCommit && DB::commit();
+            return true;
+        } catch (Exception $ex) {
+            $autoCommit && DB::rollBack();
+            throw new Exception("Erro ao atualizar valor total do plano: " . $ex->getMessage());
+        }
+    }
+
+    /**
      * Cria um novo registro de ItemContratacao
      * @param array $params
      * @param bool $autoCommit
@@ -103,6 +142,7 @@ class ItemContratacaoRepository implements ItemContratacaoContract
     {
         $autoCommit && DB::beginTransaction();
         try {
+            // Criar o item de contratação
             $itemContratacao = new ItemContratacao([
                 'id_plano_contratacao' => $params['id_plano_contratacao'],
                 'descricao' => $params['descricao'],
@@ -115,6 +155,9 @@ class ItemContratacaoRepository implements ItemContratacaoContract
                 'status' => 'E'
             ]);
             $itemContratacao->save();
+
+            // Atualizar o valor total do plano sem iniciar uma nova transação
+            $this->atualizarValorTotalPlano((int)$params['id_plano_contratacao'], false);
 
             $autoCommit && DB::commit();
             return true;
@@ -136,8 +179,15 @@ class ItemContratacaoRepository implements ItemContratacaoContract
     {
         $autoCommit && DB::beginTransaction();
         try {
+            // Atualizar o item de contratação
             $itemContratacao = $this->getById($id);
             $itemContratacao->update($params);
+
+            // Obter o ID do plano de contratação
+            $idPlanoContratacao = $itemContratacao->id_plano_contratacao;
+
+            // Atualizar o valor total do plano sem iniciar uma nova transação
+            $this->atualizarValorTotalPlano($idPlanoContratacao, false);
 
             $autoCommit && DB::commit();
             return true;
@@ -158,14 +208,21 @@ class ItemContratacaoRepository implements ItemContratacaoContract
     {
         $autoCommit && DB::beginTransaction();
         try {
+            // Obter o item antes de excluí-lo para ter acesso ao ID do plano
             $itemContratacao = $this->getById($id);
+            $idPlanoContratacao = $itemContratacao->id_plano_contratacao;
+
+            // Excluir o item
             $itemContratacao->delete();
+
+            // Atualizar o valor total do plano sem iniciar uma nova transação
+            $this->atualizarValorTotalPlano($idPlanoContratacao, false);
+
             $autoCommit && DB::commit();
+            return true;
         } catch (Exception $ex) {
             $autoCommit && DB::rollBack();
             throw new Exception($ex->getMessage());
         }
-
-        return true;
     }
 }
