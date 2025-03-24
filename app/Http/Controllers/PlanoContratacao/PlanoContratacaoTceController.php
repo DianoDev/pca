@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\PlanoContratacao;
 
-use App\Databases\Contracts\PlanoContratacaoSetorContract;
-use App\Databases\Contracts\UsuarioSetorContract;
-use App\Databases\Models\VwSetorGestor;
-use App\Http\Requests\UsuarioSetorRequest;
+use App\Databases\Contracts\PlanoContratacaoTceContract;
+use App\Databases\Contracts\UsuarioTceContract;
+use App\Databases\Models\VwTceGestor;
+use App\Http\Requests\UsuarioTceRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -13,13 +13,13 @@ use App\Databases\Models\PlanoContratacao;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
-class PlanoContratacaoSetorController extends Controller
+class PlanoContratacaoTceController extends Controller
 {
     /**
      * Constructor
-     * @param PlanoContratacaoSetorContract $planoContratacaoRepository
+     * @param PlanoContratacaoTceContract $planoContratacaoRepository
      */
-    public function __construct(private readonly PlanoContratacaoSetorContract $planoContratacaoRepository)
+    public function __construct(private readonly PlanoContratacaoTceContract $planoContratacaoRepository)
     {
     }
     /**
@@ -29,10 +29,10 @@ class PlanoContratacaoSetorController extends Controller
      */
     public function index()
     {
-        return Inertia::render('PlanoContratacaoSetor/PlanoContratacaoSetor');
+        return Inertia::render('PlanoContratacaoTce/PlanoContratacaoTce');
     }
 
-    public function create(UsuarioSetorRequest $request): JsonResponse
+    public function create(Request $request): JsonResponse
     {
         $params = $request->except('_token');
         $this->planoContratacaoRepository->create($params);
@@ -40,7 +40,7 @@ class PlanoContratacaoSetorController extends Controller
     }
 
     /**
-     * Obtém os detalhes de um registro específico de UsuarioSetor
+     * Obtém os detalhes de um registro específico de UsuarioTce
      * @param int $id
      * @return JsonResponse
      */
@@ -51,12 +51,12 @@ class PlanoContratacaoSetorController extends Controller
     }
 
     /**
-     * Atualiza um registro existente de UsuarioSetor
-     * @param UsuarioSetorRequest $request
+     * Atualiza um registro existente de UsuarioTce
+     * @param Request $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(UsuarioSetorRequest $request, int $id): JsonResponse
+    public function update(Request $request, int $id): JsonResponse
     {
         $params = $request->except('_token');
         $this->planoContratacaoRepository->update($id, $params);
@@ -64,7 +64,7 @@ class PlanoContratacaoSetorController extends Controller
     }
 
     /**
-     * Exclui um registro específico de UsuarioSetor
+     * Exclui um registro específico de UsuarioTce
      * @param int $id
      * @return JsonResponse
      */
@@ -83,7 +83,7 @@ class PlanoContratacaoSetorController extends Controller
     public function gestorInfo()
     {
         $Usuario = auth()->user();
-        $gestor = VwSetorGestor::query()->where('logon','=', $Usuario->name)->first();
+        $gestor = VwTceGestor::query()->where('logon','=', $Usuario->name)->first();
         return response()->json($gestor);
     }
 
@@ -95,9 +95,9 @@ class PlanoContratacaoSetorController extends Controller
      */
     public function list(Request $request)
     {
-        $cod_setor = Session::get('setor');
+        $cod_Tce = Session::get('Tce');
         $query = PlanoContratacao::query()
-        ->where('codigo_setor','=', $cod_setor);
+            ->where('codigo_Tce','=', $cod_Tce);
 
         // Filter by exercicio if provided
         if ($request->has('exercicio')) {
@@ -132,11 +132,11 @@ class PlanoContratacaoSetorController extends Controller
      *
      * @return JsonResponse
      */
-    public function getYears()
+    public function getYears(): JsonResponse
     {
-        $cod_setor = Session::get('setor');
+        $cod_Tce = Session::get('Tce');
         $years = PlanoContratacao::query()
-            ->where('codigo_setor',$cod_setor)
+            ->where('codigo_Tce',$cod_Tce)
             ->select('exercicio')
             ->distinct()
             ->orderBy('exercicio', 'desc')
@@ -157,7 +157,7 @@ class PlanoContratacaoSetorController extends Controller
      */
     public function exists(Request $request)
     {
-        $cod_setor = Session::get('setor');
+        $cod_Tce = Session::get('Tce');
         $exercicio = $request->input('exercicio');
 
         if (!$exercicio) {
@@ -165,7 +165,7 @@ class PlanoContratacaoSetorController extends Controller
         }
 
         $exists = PlanoContratacao::query()->with('gestor')
-            ->where('codigo_setor',$cod_setor)
+            ->where('codigo_Tce',$cod_Tce)
             ->where('exercicio', $exercicio)->first();
 
         return response()->json(['exists' => $exists]);

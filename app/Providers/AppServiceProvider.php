@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Databases\Contracts\PlanoContratacaoTceContract;
+use App\Databases\Repositories\PlanoContratacaoTceRepository;
 use Illuminate\Support\Facades\Vite;
 use App\Databases\Contracts\ItemProrrogacaoContract;
 use App\Databases\Repositories\ItemProrrogacaoRepository;
@@ -31,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
         app()->bind(ItemProrrogacaoContract::class, ItemProrrogacaoRepository::class);
         app()->bind(ItemContratacaoContract::class, ItemContratacaoRepository::class);
         app()->bind(PlanoContratacaoSetorContract::class, PlanoContratacaoSetorRepository::class);
+        app()->bind(PlanoContratacaoTceContract::class, PlanoContratacaoTceRepository::class);
         app()->bind(UsuarioSetorContract::class, UsuarioSetorRepository::class);
         Vite::prefetch(concurrency: 3);
     }
