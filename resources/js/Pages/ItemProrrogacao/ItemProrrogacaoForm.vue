@@ -109,7 +109,7 @@ function submit() {
 
     if (props.data?.id) {
         // Rota de update
-        axios.post(`/item-prorrogacao/${props.data.id}`, form.value)
+        axios.post(`/item-prorrogacao-setor/${props.data.id}`, form.value)
             .then(response => {
                 handleSuccess('Plano Contratação atualizado com sucesso!');
                 processing.value = false;
@@ -123,7 +123,7 @@ function submit() {
             });
     } else {
         // Rota de criação
-        axios.post('/item-prorrogacao', form.value)
+        axios.post('/item-prorrogacao-setor', form.value)
             .then(response => {
                 handleSuccess('Plano Contratação criado com sucesso!');
                 processing.value = false;
@@ -159,7 +159,7 @@ function handleError() {
 const loadData = async () => {
     try {
         console.log('oi')
-        const response = await axios.get(`/item-prorrogacao/${props.data.id}`);
+        const response = await axios.get(`/item-prorrogacao-setor/${props.data.id}`);
         const data = response.data;
         form.value = {
             id_plano_contratacao: data.id_plano_contratacao ? String(data.id_plano_contratacao) : '',

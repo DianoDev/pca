@@ -52,7 +52,7 @@ Route::group(['prefix' => 'setor','middleware' => ['auth']], function () {
 });
 require __DIR__.'/auth.php';
 
-Route::group(['prefix' => 'plano-contratacao','middleware' => ['auth','setor']], function () {
+Route::group(['prefix' => 'plano-contratacao-setor','middleware' => ['auth','setor']], function () {
     Route::get('/', [PlanoContratacaoController::class, 'index'])->name('plano_contratacao.index');
     Route::get('/list', [PlanoContratacaoController::class, 'list'])->name('plano_contratacao.list');
     Route::get('/years', [PlanoContratacaoController::class, 'getYears'])->name('plano_contratacao.getYears');
@@ -62,7 +62,7 @@ Route::group(['prefix' => 'plano-contratacao','middleware' => ['auth','setor']],
     Route::post('/{id}', [PlanoContratacaoController::class, 'update'])->name('plano_contratacao.update');
     Route::delete('/{id}', [PlanoContratacaoController::class, 'delete'])->name('plano_contratacao.delete');
 });
-Route::group(['prefix' => 'item-contratacao','middleware' => ['auth','setor']], function () {
+Route::group(['prefix' => 'item-contratacao-setor','middleware' => ['auth','setor']], function () {
     Route::get('/', [ItemContratacaoController::class, 'index'])->name('item_contratacao.index');
     Route::get('/{id}/list', [ItemContratacaoController::class, 'list'])->name('item_contratacao.list');
     Route::get('/{id}', [ItemContratacaoController::class, 'edit'])->name('item_contratacao.edit');
@@ -71,7 +71,7 @@ Route::group(['prefix' => 'item-contratacao','middleware' => ['auth','setor']], 
     Route::delete('/{id}', [ItemContratacaoController::class, 'delete'])->name('item_contratacao.delete');
 });
 
-Route::group(['prefix' => 'item-prorrogacao','middleware' => ['auth','setor']], function () {
+Route::group(['prefix' => 'item-prorrogacao-setor','middleware' => ['auth','setor']], function () {
     Route::get('/', [ItemProrrogacaoController::class, 'index'])->name('item_prorrogacao.index');
     Route::get('/{id}/list', [ItemProrrogacaoController::class, 'list'])->name('item_prorrogacao.list');
     Route::get('/{id}', [ItemProrrogacaoController::class, 'edit'])->name('item_prorrogacao.edit');

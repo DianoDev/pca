@@ -156,7 +156,7 @@ function submit() {
 
     if (props.data?.id) {
         // Rota de update
-        axios.post(`/item-contratacao/${props.data.id}`, form.value)
+        axios.post(`/item-contratacao-setor/${props.data.id}`, form.value)
             .then(response => {
                 handleSuccess('Plano Contratação atualizado com sucesso!');
                 processing.value = false;
@@ -170,7 +170,7 @@ function submit() {
             });
     } else {
         // Rota de criação
-        axios.post('/item-contratacao', form.value)
+        axios.post('/item-contratacao-setor', form.value)
             .then(response => {
                 handleSuccess('Plano Contratação criado com sucesso!');
                 processing.value = false;
@@ -205,7 +205,7 @@ function handleError() {
 
 const loadData = async () => {
     try {
-        const response = await axios.get(`/item-contratacao/${props.data.id}`);
+        const response = await axios.get(`/item-contratacao-setor/${props.data.id}`);
         // Set form data
         const data = response.data;
         form.value = {

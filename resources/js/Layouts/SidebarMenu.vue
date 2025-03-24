@@ -40,11 +40,20 @@
 
                         <!-- Contratos -->
                         <li class="menu-item" :class="{ 'active': isActive('contratos') }">
-                            <a href="/plano-contratacao" class="menu-link">
+                            <a href="/plano-contratacao-setor" class="menu-link">
                                 <span class="menu-icon">
                                     <i class="fa fa-file-contract"></i>
                                 </span>
-                                <span class="menu-title">Plano Contratacao</span>
+                                <span class="menu-title">Plano Contratação Setor</span>
+                            </a>
+                        </li>
+
+                        <li class="menu-item" :class="{ 'active': isActive('contratos') }">
+                            <a href="/plano-contratacao" class="menu-link">
+                                <span class="menu-icon">
+                                    <i class="fa fa-book-bookmark"></i>
+                                </span>
+                                <span class="menu-title">Plano Contratação TCE</span>
                             </a>
                         </li>
 

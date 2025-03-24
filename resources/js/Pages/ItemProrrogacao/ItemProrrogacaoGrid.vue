@@ -103,7 +103,7 @@ const confirmRemove = async (data) => {
     events.emit('loading', true);
     if (data.tipo === 'prorrogacao'){
         try {
-            await axios.delete('/item-prorrogacao/' + data.id);
+            await axios.delete('/item-prorrogacao-setor/' + data.id);
             events.emit('table-reload');
             events.emit('notification', {
                 type: 'success',
@@ -124,12 +124,12 @@ const confirmRemove = async (data) => {
 const loadData = async () => {
     try {
         events.emit('loading', true);
-        const response = await axios.get(`/plano-contratacao/exists?exercicio=${selectedYear.value}`);
+        const response = await axios.get(`/plano-contratacao-setor/exists?exercicio=${selectedYear.value}`);
         hasPlanForSelectedYear.value = response.data.exists;
 
         if (hasPlanForSelectedYear.value) {
             // Corrigindo o endpoint para lista de prorrogações
-            source.value = `/item-prorrogacao/${hasPlanForSelectedYear.value.id}/list`;
+            source.value = `/item-prorrogacao-setor/${hasPlanForSelectedYear.value.id}/list`;
         }
     } catch (error) {
         console.error('Erro ao carregar dados:', error);
