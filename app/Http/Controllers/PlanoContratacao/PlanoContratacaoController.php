@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Databases\Models\PlanoContratacao;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class PlanoContratacaoController extends Controller
@@ -94,7 +95,9 @@ class PlanoContratacaoController extends Controller
      */
     public function list(Request $request)
     {
-        $query = PlanoContratacao::query();
+        $cod_setor = Session::get('setor');
+        $query = PlanoContratacao::query()
+        ->where('codigo_setor','=', $cod_setor);
 
         // Filter by exercicio if provided
         if ($request->has('exercicio')) {
@@ -131,7 +134,10 @@ class PlanoContratacaoController extends Controller
      */
     public function getYears()
     {
-        $years = PlanoContratacao::select('exercicio')
+        $cod_setor = Session::get('setor');
+        $years = PlanoContratacao::query()
+            ->where('codigo_setor',$cod_setor)
+            ->select('exercicio')
             ->distinct()
             ->orderBy('exercicio', 'desc')
             ->pluck('exercicio')
@@ -151,13 +157,16 @@ class PlanoContratacaoController extends Controller
      */
     public function exists(Request $request)
     {
+        $cod_setor = Session::get('setor');
         $exercicio = $request->input('exercicio');
 
         if (!$exercicio) {
             return response()->json(['exists' => false]);
         }
 
-        $exists = PlanoContratacao::query()->with('gestor')->where('exercicio', $exercicio)->first();
+        $exists = PlanoContratacao::query()->with('gestor')
+            ->where('codigo_setor',$cod_setor)
+            ->where('exercicio', $exercicio)->first();
 
         return response()->json(['exists' => $exists]);
     }

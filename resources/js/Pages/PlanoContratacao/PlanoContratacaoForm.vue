@@ -120,7 +120,7 @@ const readOnly = ref(false);
 function submit() {
     processing.value = true;
 
-    axios.post('/plano-contratacao', form.value)
+    axios.post('/plano-contratacao-setor', form.value)
         .then(response => {
             handleSuccess('Plano Contratação criado com sucesso!');
             processing.value = false;
@@ -149,7 +149,7 @@ function handleError() {
 
 const loadData = async () => {
     try {
-        const response = await axios.get(`/plano-contratacao/gestorInfo`);
+        const response = await axios.get(`/plano-contratacao-setor/gestorInfo`);
         form.value.codigo_setor = response.data.codigo_setor || '';
         form.value.numero_matricula_gestor = response.data.responsavel || '';
         form.value.nome_funcionario = response.data.nome_funcionario || '';

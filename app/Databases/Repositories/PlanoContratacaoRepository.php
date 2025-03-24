@@ -48,7 +48,7 @@ class PlanoContratacaoRepository implements PlanoContratacaoContract
      */
     public function paginate(array $pagination = [], array $columns = ['*']): LengthAwarePaginator
     {
-        $query = PlanoContratacao::query();
+        $query = PlanoContratacao::query()->where();
 
         if (isset($pagination['codigo_setor'])) {
             $keyword = mb_strtolower($pagination['codigo_setor']);
