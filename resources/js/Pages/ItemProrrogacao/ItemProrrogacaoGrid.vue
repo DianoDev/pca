@@ -100,7 +100,6 @@ const getStatusBadgeColor = (status) => {
 };
 
 const confirmRemove = async (data) => {
-    console.log(data)
     events.emit('loading', true);
     if (data.tipo === 'prorrogacao'){
         try {
@@ -110,6 +109,7 @@ const confirmRemove = async (data) => {
                 type: 'success',
                 message: 'Item Prorrogação excluído com sucesso.'
             });
+          events.emit('reload-plano', true);
         } catch (err) {
             events.emit('notification', {
                 type: 'error',

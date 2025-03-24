@@ -138,6 +138,7 @@ function submit() {
     }
 }
 function handleSuccess(message) {
+    events.emit('reload-plano', true);
     events.emit('notification', {
         type: 'success',
         message: message
