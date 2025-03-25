@@ -29,7 +29,7 @@ class PlanoContratacaoSetorController extends Controller
      */
     public function index()
     {
-        return Inertia::render('PlanoContratacaoSetor/PlanoContratacaoSetor');
+        return Inertia::render('PlanoContratacao/PlanoContratacaoSetor');
     }
 
     public function create(UsuarioSetorRequest $request): JsonResponse

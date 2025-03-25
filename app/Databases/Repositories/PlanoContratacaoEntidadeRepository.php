@@ -1,15 +1,16 @@
 <?php
 namespace App\Databases\Repositories;
 
-use App\Databases\Contracts\PlanoContratacaoTceContract;
+use App\Databases\Contracts\PlanoContratacaoEntidadeContract;
 use App\Databases\Models\PlanoContratacao;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\Session;
 
-class PlanoContratacaoTceRepository implements PlanoContratacaoTceContract
+class PlanoContratacaoEntidadeRepository implements PlanoContratacaoEntidadeContract
 {
     /**
      * Constructor
@@ -48,7 +49,32 @@ class PlanoContratacaoTceRepository implements PlanoContratacaoTceContract
      */
     public function paginate(array $pagination = [], array $columns = ['*']): LengthAwarePaginator
     {
-        $query = PlanoContratacao::query()->where();
+        $cod_setor = Session::get('setor');
+        // Construa a query com as relações apropriadas
+        $query = PlanoContratacao::query()
+            ->join('setor_pca', function($join) use ($cod_setor) {
+                $join->on('setor_pca.codigo_setor', '=', 'plano_contratacao.codigo_setor')
+                    ->where('setor_pca.codigo_setor_pai', '=', $cod_setor);
+            })
+            ->leftJoin('vw_setor_gestor', 'vw_setor_gestor.codigo_setor', '=', 'plano_contratacao.codigo_setor')
+            ->leftJoin('publico.vw_sigp_funcionario', 'publico.vw_sigp_funcionario.numero_matricula', '=', 'plano_contratacao.numero_matricula_gestor')
+            ->select([
+                'plano_contratacao.id',
+                'plano_contratacao.codigo_setor',
+                'plano_contratacao.exercicio',
+                'plano_contratacao.valor_total',
+                'plano_contratacao.status',
+                'plano_contratacao.email',
+                'plano_contratacao.telefone',
+                'plano_contratacao.numero_matricula_gestor',
+                'publico.vw_sigp_funcionario.nome_funcionario',
+                'vw_setor_gestor.nome_setor_formatado',
+            ]);
+
+        // Filter by exercicio if provided
+        if ($pagination['exercicio']) {
+            $query->where('plano_contratacao.exercicio', $pagination['exercicio']);
+        }
 
         if (isset($pagination['codigo_setor'])) {
             $keyword = mb_strtolower($pagination['codigo_setor']);
