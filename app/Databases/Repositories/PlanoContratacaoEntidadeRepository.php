@@ -50,12 +50,14 @@ class PlanoContratacaoEntidadeRepository implements PlanoContratacaoEntidadeCont
     public function paginate(array $pagination = [], array $columns = ['*']): LengthAwarePaginator
     {
         $cod_setor = Session::get('setor');
-        // Construa a query com as relações apropriadas
+
+        // Buscar todos os códigos de setores descendentes (recursive function)
+        $setoresCodigos = $this->getDescendantSectors($cod_setor);
+        // Não incluímos o próprio setor na lista
+
+        // Construir a query usando a lista de códigos
         $query = PlanoContratacao::query()
-            ->join('setor_pca', function($join) use ($cod_setor) {
-                $join->on('setor_pca.codigo_setor', '=', 'plano_contratacao.codigo_setor')
-                    ->where('setor_pca.codigo_setor_pai', '=', $cod_setor);
-            })
+            ->whereIn('plano_contratacao.codigo_setor', $setoresCodigos)
             ->leftJoin('vw_setor_gestor', 'vw_setor_gestor.codigo_setor', '=', 'plano_contratacao.codigo_setor')
             ->leftJoin('publico.vw_sigp_funcionario', 'publico.vw_sigp_funcionario.numero_matricula', '=', 'plano_contratacao.numero_matricula_gestor')
             ->select([
@@ -72,7 +74,7 @@ class PlanoContratacaoEntidadeRepository implements PlanoContratacaoEntidadeCont
             ]);
 
         // Filter by exercicio if provided
-        if ($pagination['exercicio']) {
+        if (isset($pagination['exercicio'])) {
             $query->where('plano_contratacao.exercicio', $pagination['exercicio']);
         }
 
@@ -107,6 +109,32 @@ class PlanoContratacaoEntidadeRepository implements PlanoContratacaoEntidadeCont
 
         $query->orderBy($pagination['sort'] ?? 'codigo_setor', $pagination['sort_direction'] ?? 'asc');
         return $query->paginate($pagination['per_page'] ?? 10, $columns, 'page', $pagination['current_page'] ?? 1);
+    }
+
+    /**
+     * Função recursiva para obter todos os setores descendentes
+     * @param int $sectorId
+     * @return array
+     */
+    private function getDescendantSectors($sectorId): array
+    {
+        $descendants = [];
+
+        // Buscar filhos diretos
+        $children = DB::table('setor_pca')
+            ->where('codigo_setor_pai', $sectorId)
+            ->pluck('codigo_setor')
+            ->toArray();
+
+        $descendants = array_merge($descendants, $children);
+
+        // Para cada filho, buscar seus descendentes recursivamente
+        foreach ($children as $childId) {
+            $childDescendants = $this->getDescendantSectors($childId);
+            $descendants = array_merge($descendants, $childDescendants);
+        }
+
+        return $descendants;
     }
 
     /**
