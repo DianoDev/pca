@@ -47,8 +47,7 @@
                                 <span class="menu-title">Plano Contratação Setor</span>
                             </a>
                         </li>
-
-                        <li v-if="setorInfo.tem_setor_filho !== 'N' " class="menu-item" :class="{ 'active': isActive('contratos') }">
+                        <li v-if="setorInfo.hierarquia !== '4' " class="menu-item" :class="{ 'active': isActive('contratos') }">
                             <a href="/plano-contratacao-tce" class="menu-link">
                                 <span class="menu-icon">
                                     <i class="fa fa-book-bookmark"></i>

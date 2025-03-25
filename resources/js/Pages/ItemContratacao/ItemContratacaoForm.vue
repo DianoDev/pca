@@ -249,7 +249,7 @@ function submit() {
 
     if (props.data?.id) {
         // Rota de update
-        axios.post(`/plano-contratacao-tce/item-contratacao/${props.data.id}`, form.value)
+        axios.post(`/item-contratacao-setor/${props.data.id}`, form.value)
             .then(response => {
                 handleSuccess('Item Contratação atualizado com sucesso!');
                 processing.value = false;
@@ -263,7 +263,7 @@ function submit() {
             });
     } else {
         // Rota de criação
-        axios.post('/plano-contratacao-tce/item-contratacao', form.value)
+        axios.post('/item-contratacao-setor', form.value)
             .then(response => {
                 handleSuccess('Item Contratação criado com sucesso!');
                 processing.value = false;

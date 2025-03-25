@@ -205,7 +205,7 @@ function submit() {
 
     if (props.data?.id) {
         // Rota de update
-        axios.post(`/plano-contratacao-tce/item-prorrogacao/${props.data.id}`, form.value)
+        axios.post(`/item-prorrogacao-setor/${props.data.id}`, form.value)
             .then(response => {
                 handleSuccess('Item Prorrogação atualizado com sucesso!');
                 processing.value = false;
@@ -219,7 +219,7 @@ function submit() {
             });
     } else {
         // Rota de criação
-        axios.post('/plano-contratacao-tce/item-prorrogacao', form.value)
+        axios.post('/item-prorrogacao-setor', form.value)
             .then(response => {
                 handleSuccess('Item Prorrogação criado com sucesso!');
                 processing.value = false;

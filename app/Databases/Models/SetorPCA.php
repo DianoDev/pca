@@ -19,6 +19,7 @@ class SetorPCA extends Model
         'codigo_setor_pai',
         'ativo',
         'tem_setor_filho',
+        'hierarquia'
     ];
 
     // Relacionamento com o setor pai

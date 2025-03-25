@@ -15,6 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('codigo_setor')->primary();
             $table->unsignedBigInteger('codigo_setor_pai')->nullable();
             $table->char('ativo', 1);
+            $table->integer('hierarquia');
             $table->char('tem_setor_filho', 1);
             $table->timestamps();
             $table->softDeletes();

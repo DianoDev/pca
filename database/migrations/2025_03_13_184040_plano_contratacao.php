@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email', 255)->nullable();
             $table->string('telefone', 20)->nullable();
             $table->char('status', 1);
+            $table->char('progresso', 2)->nullable();
             $table->float('valor_total')->nullable();
             $table->timestamps();
             $table->softDeletes();

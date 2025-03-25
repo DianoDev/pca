@@ -381,6 +381,7 @@ const adicionarFilho = async () => {
     if (!setorSelecionado.value || !setorPaiSelecionado.value) return;
 
     try {
+        console.log('oi')
         isLoading.value = true;
         await axios.post('/organograma/adicionar-filho', {
             codigo_setor_pai: setorPaiSelecionado.value.id,
