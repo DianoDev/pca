@@ -103,6 +103,19 @@ class ItemContratacaoController extends Controller
     }
 
     /**
+     * Atualiza um registro existente de ItemContratacao
+     * @param ItemContratacaoRequest $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function updateStatus(ItemContratacaoRequest $request, int $id): JsonResponse
+    {
+        $params = $request->except('_token');
+        $this->itemContratacaoRepository->updateStatus($id, $params);
+        return response()->json(['success', $params]);
+    }
+
+    /**
      * Exclui um registro específico de ItemContratacao
      * @param int $id
      * @return JsonResponse

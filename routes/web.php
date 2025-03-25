@@ -69,6 +69,7 @@ Route::group(['prefix' => 'item-contratacao-setor','middleware' => ['auth','seto
     Route::get('/{id}', [ItemContratacaoController::class, 'edit'])->name('item_contratacao.edit');
     Route::post('/', [ItemContratacaoController::class, 'create'])->name('item_contratacao.create');
     Route::post('/{id}', [ItemContratacaoController::class, 'update'])->name('item_contratacao.update');
+    Route::post('/updatestatus/{id}', [ItemContratacaoController::class, 'updateStatus'])->name('item_contratacao.updatestatus');
     Route::delete('/{id}', [ItemContratacaoController::class, 'delete'])->name('item_contratacao.delete');
 });
 
@@ -78,6 +79,7 @@ Route::group(['prefix' => 'item-prorrogacao-setor','middleware' => ['auth','seto
     Route::get('/{id}', [ItemProrrogacaoController::class, 'edit'])->name('item_prorrogacao.edit');
     Route::post('/', [ItemProrrogacaoController::class, 'create'])->name('item_prorrogacao.create');
     Route::post('/{id}', [ItemProrrogacaoController::class, 'update'])->name('item_prorrogacao.update');
+    Route::post('/updatestatus/{id}', [ItemProrrogacaoController::class, 'updateStatus'])->name('item_prorrogacao.updatestatus');
     Route::delete('/{id}', [ItemProrrogacaoController::class, 'delete'])->name('item_prorrogacao.delete');
 });
 

@@ -23,6 +23,7 @@ class PlanoContratacaoEntidadeController extends Controller
     public function __construct(private readonly PlanoContratacaoEntidadeContract $planoContratacaoRepository)
     {
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -38,41 +39,46 @@ class PlanoContratacaoEntidadeController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function validacao()
-    {
-        return Inertia::render('PlanoContratacao/PlanoContratacaoValidacao');
-    }
-
-    /**
-     * Get a specific plan by ID for validation.
-     *
-     * @param int $id
-     * @return JsonResponse
-     */
-    public function show(int $id): JsonResponse
+    public function validacao(int $id)
     {
         try {
+            // Buscar o plano com os relacionamentos necessários
             $plano = PlanoContratacao::query()
-                ->with(['gestor', 'itensContratacao', 'itensProrrogacao'])
-                ->findOrFail($id);
+                ->leftJoin('vw_setor_gestor', 'vw_setor_gestor.codigo_setor', '=', 'plano_contratacao.codigo_setor')
+                ->leftJoin('publico.vw_sigp_funcionario', 'publico.vw_sigp_funcionario.numero_matricula', '=', 'plano_contratacao.numero_matricula_gestor')
+                ->select([
+                    'plano_contratacao.id',
+                    'plano_contratacao.codigo_setor',
+                    'plano_contratacao.exercicio',
+                    'plano_contratacao.valor_total',
+                    'plano_contratacao.status',
+                    'plano_contratacao.email',
+                    'plano_contratacao.telefone',
+                    'plano_contratacao.numero_matricula_gestor',
+                    'vw_setor_gestor.nome_setor_formatado as setor_nome',
+                    'publico.vw_sigp_funcionario.nome_funcionario as gestor_nome'
+                ])
+                ->where('plano_contratacao.id', $id)
+                ->first();
 
-            // Mapear os dados para incluir informações do setor e gestor
-            $resultado = [
-                'id' => $plano->id,
-                'codigo_setor' => $plano->codigo_setor,
-                'exercicio' => $plano->exercicio,
-                'valor_total' => $plano->valor_total,
-                'status' => $plano->status,
-                'email' => $plano->email,
-                'telefone' => $plano->telefone,
-                'numero_matricula_gestor' => $plano->numero_matricula_gestor,
-                'setor_nome' => $plano->gestor->nome_setor_formatado ?? 'Setor não informado',
-                'gestor_nome' => $plano->gestor->nome_funcionario ?? 'Gestor não informado',
-            ];
+            if (!$plano) {
+                // Se o plano não for encontrado, passar um objeto vazio
+                return Inertia::render('PlanoContratacao/PlanoContratacaoValidacao', [
+                    'plano' => null,
+                    'erro' => 'Plano não encontrado'
+                ]);
+            }
 
-            return response()->json($resultado);
+            // Passar o plano diretamente para o componente
+            return Inertia::render('PlanoContratacao/PlanoContratacaoValidacao', [
+                'plano' => $plano
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Plano não encontrado'], 404);
+            // Em caso de erro, passar mensagem de erro
+            return Inertia::render('PlanoContratacao/PlanoContratacaoValidacao', [
+                'plano' => null,
+                'erro' => 'Erro ao buscar plano: ' . $e->getMessage()
+            ]);
         }
     }
 
@@ -83,7 +89,7 @@ class PlanoContratacaoEntidadeController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function updateStatus(Request $request, int $id): JsonResponse
+    public function updateStatus(int $id, Request $request): JsonResponse
     {
         try {
             $status = $request->input('status');
@@ -105,6 +111,7 @@ class PlanoContratacaoEntidadeController extends Controller
             return response()->json(['error' => 'Erro ao atualizar status: ' . $e->getMessage()], 500);
         }
     }
+
 
     public function create(Request $request): JsonResponse
     {
@@ -151,13 +158,13 @@ class PlanoContratacaoEntidadeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
     public function gestorInfo()
     {
         $Usuario = auth()->user();
-        $gestor = VwSetorGestor::query()->where('logon','=', $Usuario->name)->first();
+        $gestor = VwSetorGestor::query()->where('logon', '=', $Usuario->name)->first();
         return response()->json($gestor);
     }
 
@@ -218,12 +225,12 @@ class PlanoContratacaoEntidadeController extends Controller
     {
         $cod_setor = Session::get('setor');
         $years = PlanoContratacao::query()
-            ->where('codigo_setor',$cod_setor)
+            ->where('codigo_setor', $cod_setor)
             ->select('exercicio')
             ->distinct()
             ->orderBy('exercicio', 'desc')
             ->pluck('exercicio')
-            ->map(function($year) {
+            ->map(function ($year) {
                 return (int)$year; // Ensure years are integers
             })
             ->toArray();
@@ -247,7 +254,7 @@ class PlanoContratacaoEntidadeController extends Controller
         }
 
         $exists = PlanoContratacao::query()->with('gestor')
-            ->where('codigo_Tce',$cod_setor)
+            ->where('codigo_Tce', $cod_setor)
             ->where('exercicio', $exercicio)->first();
 
         return response()->json(['exists' => $exists]);

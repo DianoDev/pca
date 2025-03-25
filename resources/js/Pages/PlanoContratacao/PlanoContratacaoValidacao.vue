@@ -159,14 +159,8 @@
                                 <h2 class="text-xl font-bold text-gray-800 mr-2">Itens de Contratação</h2>
                             </div>
 
-                            <!-- Datatable para Itens de Contratação -->
-                            <div class="overflow-x-auto">
-                                <datatable
-                                    id="itens_contratacao"
-                                    :columns="columnsContratacao"
-                                    :source="`/item-contratacao-setor/${planoSelecionado.id}/list`">
-                                </datatable>
-                            </div>
+                            <!-- Componente Grid para Itens de Contratação -->
+                            <ItemContratacaoValidacaoGrid :plano-id="planoSelecionado.id" />
                         </div>
 
                         <!-- Seção de Itens de Prorrogação -->
@@ -175,16 +169,19 @@
                                 <h2 class="text-xl font-bold text-gray-800 mr-2">Itens de Prorrogação</h2>
                             </div>
 
-                            <!-- Datatable para Itens de Prorrogação -->
-                            <div class="overflow-x-auto">
-                                <datatable
-                                    id="itens_prorrogacao"
-                                    :columns="columnsProrrogacao"
-                                    :source="`/item-prorrogacao-setor/${planoSelecionado.id}/list`">
-                                </datatable>
-                            </div>
+                            <!-- Componente Grid para Itens de Prorrogação -->
+                            <ItemProrrogacaoValidacaoGrid :plano-id="planoSelecionado.id" />
                         </div>
                     </div>
+                </div>
+                <div v-else-if="erro" class="bg-white p-6 rounded-lg shadow-md text-center">
+                    <div class="mb-4">
+                        <i class="fa fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
+                        <p class="text-gray-700">{{ erro }}</p>
+                    </div>
+                    <a href="/plano-contratacao-tce" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md inline-block">
+                        <i class="fa fa-arrow-left mr-2"></i> Voltar
+                    </a>
                 </div>
                 <div v-else class="bg-white p-6 rounded-lg shadow-md text-center">
                     <div class="mb-4">
@@ -204,105 +201,28 @@
 </template>
 
 <script setup>
-import { ref, inject, computed, onMounted, watch } from 'vue';
+import { ref, inject, computed, onMounted } from 'vue';
 import LayoutPrincipal from "@/Layouts/LayoutPrincipal.vue";
-import Datatable from "@/Components/datatable/Datatable.vue";
+import ItemContratacaoValidacaoGrid from "@/Pages/ItemContratacao/ItemContratacaoValidacaoGrid.vue";
+import ItemProrrogacaoValidacaoGrid from "@/Pages/ItemProrrogacao/ItemProrrogacaoValidacaoGrid.vue";
 
 const events = inject('events');
-const route = useRoute();
+
+// Props recebidas do controlador
+const props = defineProps({
+    plano: {
+        type: Object,
+        default: null
+    },
+    erro: {
+        type: String,
+        default: null
+    }
+});
 
 // State variables
 const ready = ref(false);
-const planoSelecionado = ref(null);
-
-// Colunas para o datatable de Itens de Contratação
-const columnsContratacao = ref([
-    {
-        name: 'descricao',
-        title: 'Descrição',
-        width: '30%',
-        sort: 'descricao',
-        nowrap: true,
-        formatter: (value) => {
-            return value && value.length > 20 ?
-                `<span title="${value.replace(/"/g, '&quot;')}">${value.substring(0, 20)}...</span>` :
-                value;
-        }
-    },
-    {
-        name: 'valor_total',
-        title: 'Valor Total',
-        width: '20%',
-        sort: 'valor_total',
-        nowrap: true,
-        formatter: (value) => {
-            return value ? `R$ ${parseFloat(value).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : '';
-        }
-    },
-    {
-        name: 'classificacao',
-        title: 'Classificação',
-        width: '25%',
-        sort: 'classificacao',
-        nowrap: true,
-        formatter: (value) => {
-            return formatClassificacao(value);
-        }
-    },
-    {
-        name: 'status',
-        title: 'Status',
-        width: '15%',
-        sort: 'status',
-        nowrap: true,
-        formatter: (value) => {
-            return `<span class="inline-flex px-2 py-1 text-xs font-medium rounded-full text-white ${getStatusBadgeColor(value)}">${formatStatus(value)}</span>`;
-        }
-    }
-]);
-
-// Colunas para o datatable de Itens de Prorrogação
-const columnsProrrogacao = ref([
-    {
-        name: 'objeto',
-        title: 'Objeto',
-        width: '30%',
-        sort: 'objeto',
-        nowrap: true,
-        formatter: (value) => {
-            return value && value.length > 40 ?
-                `<span title="${value.replace(/"/g, '&quot;')}">${value.substring(0, 40)}...</span>` :
-                value;
-        }
-    },
-    {
-        name: 'numero',
-        title: 'Número',
-        width: '15%',
-        sort: 'numero',
-        nowrap: true
-    },
-    {
-        name: 'valor_global',
-        title: 'Valor Global',
-        width: '20%',
-        sort: 'valor_global',
-        nowrap: true,
-        formatter: (value) => {
-            return value ? `R$ ${parseFloat(value).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : '';
-        }
-    },
-    {
-        name: 'status',
-        title: 'Status',
-        width: '15%',
-        sort: 'status',
-        nowrap: true,
-        formatter: (value) => {
-            return `<span class="inline-flex px-2 py-1 text-xs font-medium rounded-full text-white ${getStatusBadgeColor(value)}">${formatStatusContrato(value)}</span>`;
-        }
-    }
-]);
+const planoSelecionado = ref(props.plano);
 
 // Dias restantes até o prazo final
 const diasRestantes = computed(() => {
@@ -334,38 +254,6 @@ const formatStatus = (status) => {
             return 'Iniciado';
         default:
             return status || 'Não definido';
-    }
-};
-
-const formatStatusContrato = (status) => {
-    switch (status) {
-        case 'E':
-            return 'Pendente Aprovação';
-        case 'A':
-            return 'Aprovado';
-        case 'R':
-            return 'Reprovado';
-        case 'I':
-            return 'Iniciado';
-        default:
-            return status || 'Não definido';
-    }
-};
-
-const formatClassificacao = (value) => {
-    switch (value) {
-        case 'A4':
-            return 'Material de Consumo';
-        case 'A5':
-            return 'Material Permanente';
-        case 'A1':
-            return 'Serviços Pessoa Física';
-        case 'A2':
-            return 'Serviços de TI';
-        case 'A3':
-            return 'Serviços Pessoa Jurídica';
-        default:
-            return value || 'Não classificado';
     }
 };
 
@@ -454,35 +342,6 @@ const getDiasRestantesClass = (dias) => {
     }
 };
 
-// Método para buscar plano pelo ID
-const fetchPlano = async () => {
-    try {
-        events.emit('loading', true);
-
-        // Obtém o ID do plano da URL
-        const id = route.params.id || new URLSearchParams(window.location.search).get('id');
-
-        if (!id) {
-            events.emit('notification', {
-                type: 'error',
-                message: 'ID do plano não informado'
-            });
-            return;
-        }
-
-        const response = await axios.get(`/plano-contratacao-tce/show/${id}`);
-        planoSelecionado.value = response.data;
-    } catch (error) {
-        console.error('Erro ao carregar plano:', error);
-        events.emit('notification', {
-            type: 'error',
-            message: 'Não foi possível carregar as informações do plano'
-        });
-    } finally {
-        events.emit('loading', false);
-    }
-};
-
 // Método para atualizar o status do plano
 const updateStatus = async (status) => {
     if (!planoSelecionado.value) return;
@@ -516,14 +375,8 @@ const updateStatus = async (status) => {
 };
 
 // Lifecycle hooks
-onMounted(async () => {
-    ready.value = false;
-    try {
-        await fetchPlano();
-    } catch (error) {
-        console.error('Erro durante a inicialização:', error);
-    } finally {
-        ready.value = true;
-    }
+onMounted(() => {
+    // Já temos os dados do plano via props, só precisamos marcar como pronto
+    ready.value = true;
 });
 </script>

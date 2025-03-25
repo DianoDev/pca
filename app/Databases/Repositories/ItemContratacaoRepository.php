@@ -198,6 +198,30 @@ class ItemContratacaoRepository implements ItemContratacaoContract
     }
 
     /**
+     * Atualiza um registro existente de ItemContratacao
+     * @param int $id
+     * @param array $params
+     * @param bool $autoCommit
+     * @return bool
+     * @throws Exception
+     */
+    public function updateStatus(int $id, array $params, bool $autoCommit = true): bool
+    {
+        $autoCommit && DB::beginTransaction();
+        try {
+            // Atualizar o item de contratação
+            $itemContratacao = $this->getById($id);
+            $itemContratacao->update($params);
+
+            $autoCommit && DB::commit();
+            return true;
+        } catch (Exception $ex) {
+            $autoCommit && DB::rollBack();
+            throw new Exception($ex);
+        }
+    }
+
+    /**
      * Deleta ItemContratacao
      * @param int $id
      * @param bool $autoCommit

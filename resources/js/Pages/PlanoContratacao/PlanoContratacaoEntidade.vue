@@ -23,7 +23,7 @@
             <div v-if="ready">
                 <!-- Cabeçalho com informações da entidade -->
                 <div class="mb-5">
-                    <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden mb-6">
+                    <div class="bg-white rounded-md shadow-md border border-gray-200 overflow-hidden mb-6">
                         <div class="px-6 py-4 border-b border-gray-200 bg-blue-50">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 rounded-full p-2 mr-3 bg-blue-100">
@@ -69,11 +69,11 @@
                                 <!-- Valor Total Agregado -->
                                 <div class="border-t md:border-t-0 md:border-l border-gray-200 md:pl-6 pt-4 md:pt-0">
                                     <div class="flex items-start">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                        <div class="flex-shrink-0 w-10 h-10 rounded-md bg-gray-100 flex items-center justify-center mr-3">
                                             <i class="fa fa-money-bill-wave text-gray-500"></i>
                                         </div>
                                         <div>
-                                            <h4 class="text-sm font-medium text-gray-500">Valor Total Consolidado</h4>
+                                            <h4 class="text-sm font-medium text-gray-500">Valor Total de Contratações</h4>
                                             <p class="text-base font-semibold text-blue-600">
                                                 {{ valorTotalConsolidado ? `R$ ${parseFloat(valorTotalConsolidado).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : 'Não informado' }}
                                             </p>
@@ -86,7 +86,7 @@
 
                     <!-- Grid de Planos -->
                     <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">Planos de Contratação Consolidados</h2>
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">Planos de Contratação dos Setores </h2>
                         <div class="overflow-x-auto">
                             <datatable
                                 id="planos_consolidados"
@@ -168,13 +168,6 @@ const availableYears = computed(() => {
 // Colunas para o datatable
 const columns = ref([
     {
-        name: 'codigo_setor',
-        title: 'Código Setor',
-        width: '10%',
-        sort: 'codigo_setor',
-        nowrap: true
-    },
-    {
         name: 'nome_setor_formatado',
         title: 'Setor',
         width: '25%',
@@ -205,18 +198,17 @@ const columns = ref([
         sort: 'status',
         nowrap: true,
         formatter: (value) => {
-            return `<span class="inline-flex px-2 py-1 text-xs font-medium rounded-full text-white ${getStatusBadgeColor(value)}">${formatStatus(value)}</span>`;
+            return `<span class="inline-flex px-2 py-1 text-xs font-medium  rounded-md text-white ${getStatusBadgeColor(value)}">${formatStatus(value)}</span>`;
         }
     },
     {
         name: 'id',
         title: 'Ações',
-        width: '10%',
+        width: '8%',
         nowrap: true,
-        contentClass: 'text-center',
         formatter: (value, row) => {
             // Botão para ver os itens de contratação e prorrogação
-            return `<a href="/plano-contratacao-tce/validacao/${row.id}" data-json='{"id": "${value}", "setor": "${row.codigo_setor}"}' data-action="view-items" class="mx-1 tooltip tooltip--top" data-tooltip="Ver Itens"><i class="fa fa-eye text-blue-600"></i></a>`;
+            return `<a href="/plano-contratacao-tce/validacao/${row.id}" data-json='{"id": "${value}", "setor": "${row.codigo_setor}"}' data-action="view-items" class="mx-1 tooltip tooltip--top" data-tooltip="Ver Itens"><i class="fa fa-file-circle-check text-blue-600"></i></a>`;
         }
     }
 ]);
