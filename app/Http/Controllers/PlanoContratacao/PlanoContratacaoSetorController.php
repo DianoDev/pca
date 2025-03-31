@@ -29,7 +29,10 @@ class PlanoContratacaoSetorController extends Controller
      */
     public function index()
     {
-        return Inertia::render('PlanoContratacao/PlanoContratacaoSetor');
+        $hierarquia = Session::get('setor')->hierarquia;
+        return Inertia::render('PlanoContratacao/PlanoContratacaoSetor', [
+            'hierarquia' => $hierarquia
+        ]);
     }
 
     public function create(UsuarioSetorRequest $request): JsonResponse
@@ -157,6 +160,7 @@ class PlanoContratacaoSetorController extends Controller
      */
     public function exists(Request $request)
     {
+
         $cod_setor = Session::get('setor');
         $exercicio = $request->input('exercicio');
 

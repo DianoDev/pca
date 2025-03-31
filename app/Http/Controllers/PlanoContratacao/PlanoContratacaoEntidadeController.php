@@ -45,7 +45,7 @@ class PlanoContratacaoEntidadeController extends Controller
             // Buscar o plano com os relacionamentos necessários
             $plano = PlanoContratacao::query()
                 ->leftJoin('vw_setor_gestor', 'vw_setor_gestor.codigo_setor', '=', 'plano_contratacao.codigo_setor')
-                ->leftJoin('publico.vw_sigp_funcionario', 'publico.vw_sigp_funcionario.numero_matricula', '=', 'plano_contratacao.numero_matricula_gestor')
+                ->leftJoin('publico.vw_sigp_funcionario', 'publico.vw_sigp_funcionario.numero_matricula', '=', 'plano_contratacao.numero_matricula_gestor_criador')
                 ->select([
                     'plano_contratacao.id',
                     'plano_contratacao.codigo_setor',
@@ -54,7 +54,7 @@ class PlanoContratacaoEntidadeController extends Controller
                     'plano_contratacao.status',
                     'plano_contratacao.email',
                     'plano_contratacao.telefone',
-                    'plano_contratacao.numero_matricula_gestor',
+                    'plano_contratacao.numero_matricula_gestor_criador',
                     'vw_setor_gestor.nome_setor_formatado as setor_nome',
                     'publico.vw_sigp_funcionario.nome_funcionario as gestor_nome'
                 ])

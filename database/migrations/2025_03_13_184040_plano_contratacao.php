@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('plano_contratacao', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('codigo_setor');
-            $table->unsignedBigInteger('numero_matricula_gestor');
+            $table->unsignedBigInteger('numero_matricula_gestor_criador');
+            $table->unsignedBigInteger('numero_matricula_gestor_finalizador')->nullable();
             $table->integer('exercicio');
+            $table->integer('hierarquia_aprovacao')->nullable();
             $table->string('email', 255)->nullable();
             $table->string('telefone', 20)->nullable();
             $table->char('status', 1);
-            $table->char('progresso', 2)->nullable();
             $table->float('valor_total')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -29,8 +30,6 @@ return new class extends Migration
                 ->on('setor_pca')
                 ->onDelete('cascade');
 
-            // Índice para o número de matrícula do gestor
-            $table->index('numero_matricula_gestor');
         });
     }
 

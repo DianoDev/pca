@@ -96,11 +96,11 @@ class PlanoContratacaoSetorRepository implements PlanoContratacaoSetorContract
         try {
             $planoContratacao = new PlanoContratacao([
                 'codigo_setor' => $params['codigo_setor'],
-                'numero_matricula_gestor' => $params['numero_matricula_gestor'],
+                'numero_matricula_gestor_criador' => $params['numero_matricula_gestor'],
                 'exercicio' => $params['exercicio'],
                 'email' => $params['email'],
                 'telefone' => $params['telefone'],
-                'status' => 'E'
+                'status' => 'P'
             ]);
             $planoContratacao->save();
 

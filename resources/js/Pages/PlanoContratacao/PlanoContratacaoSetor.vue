@@ -231,6 +231,9 @@ import PopupButton from "@/Components/PopupButton.vue";
 import LayoutPrincipal from "@/Layouts/LayoutPrincipal.vue";
 import ItemContratacaoGrid from "@/Pages/ItemContratacao/ItemContratacaoGrid.vue";
 import ItemProrrogacaoGrid from "@/Pages/ItemProrrogacao/ItemProrrogacaoGrid.vue";
+import { usePage } from '@inertiajs/vue3';
+
+const { hierarquia } = usePage().props;
 
 const events = inject('events');
 
@@ -293,13 +296,13 @@ const getDiasRestantesClass = (dias) => {
 const formatStatus = (status) => {
     switch (status) {
         case 'E':
-            return 'Em andamento';
+            return 'Em Analise';
         case 'A':
             return 'Aprovado';
         case 'R':
             return 'Reprovado';
-        case 'I':
-            return 'Iniciado';
+        case 'P':
+            return 'Pendente Envio';
         default:
             return status || 'Não definido';
     }
@@ -309,13 +312,13 @@ const formatStatus = (status) => {
 // Funções para definir cores baseadas no status do plano
 const getStatusBackgroundColor = (status) => {
     switch (status) {
-        case 'E':
+        case 'P':
             return 'bg-yellow-50';
         case 'A':
             return 'bg-green-50';
         case 'R':
             return 'bg-red-50';
-        case 'I':
+        case 'E':
             return 'bg-blue-50';
         default:
             return 'bg-gray-100';
@@ -324,13 +327,13 @@ const getStatusBackgroundColor = (status) => {
 
 const getStatusIconBackgroundColor = (status) => {
     switch (status) {
-        case 'E':
+        case 'P':
             return 'bg-yellow-100';
         case 'A':
             return 'bg-green-100';
         case 'R':
             return 'bg-red-100';
-        case 'I':
+        case 'E':
             return 'bg-blue-100';
         default:
             return 'bg-gray-300';
@@ -339,13 +342,13 @@ const getStatusIconBackgroundColor = (status) => {
 
 const getStatusIconTextColor = (status) => {
     switch (status) {
-        case 'E':
+        case 'P':
             return 'text-yellow-600';
         case 'A':
             return 'text-green-600';
         case 'R':
             return 'text-red-600';
-        case 'I':
+        case 'E':
             return 'text-blue-600';
         default:
             return 'text-gray-600';
@@ -355,13 +358,13 @@ const getStatusIconTextColor = (status) => {
 // Nova função para definir cores do badge de status (background com texto branco)
 const getStatusBadgeColor = (status) => {
     switch (status) {
-        case 'E':
+        case 'P':
             return 'bg-yellow-500';
         case 'A':
             return 'bg-green-500';
         case 'R':
             return 'bg-red-500';
-        case 'I':
+        case 'E':
             return 'bg-blue-500';
         default:
             return 'bg-gray-500';
@@ -370,13 +373,13 @@ const getStatusBadgeColor = (status) => {
 
 const getStatusIcon = (status) => {
     switch (status) {
-        case 'E':
+        case 'P':
             return 'fa-clock';
         case 'A':
             return 'fa-check-circle';
         case 'R':
             return 'fa-times-circle';
-        case 'I':
+        case 'E':
             return 'fa-clipboard-list';
         default:
             return 'fa-clipboard-list';

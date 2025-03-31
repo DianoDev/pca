@@ -245,7 +245,7 @@ const diasRestantes = computed(() => {
 const formatStatus = (status) => {
     switch (status) {
         case 'E':
-            return 'Em andamento';
+            return 'Pendente Aprovação';
         case 'A':
             return 'Aprovado';
         case 'R':
