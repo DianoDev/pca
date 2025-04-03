@@ -38,6 +38,14 @@
                             </a>
                         </li>
 
+                        <li class="menu-item" :class="{ 'active': isActive('ciclo-contratacao') }">
+                            <a href="/ciclo-contratacao" class="menu-link">
+                                <span class="menu-icon">
+                                    <i class="fa fa-calendar-check"></i>
+                                </span>
+                                <span class="menu-title">Ciclo Contratação</span>
+                            </a>
+                        </li>
                         <!-- Contratos -->
                         <li class="menu-item" :class="{ 'active': isActive('plano-contratacao-setor') }">
                             <a href="/plano-contratacao-setor" class="menu-link">
@@ -147,6 +155,8 @@ onMounted(() => {
         activeItem.value = 'organograma';
     } else if (path.includes('plano-contratacao-setor')) {
         activeItem.value = 'plano-contratacao-setor';
+    }else if (path.includes('ciclo-contratacao')) {
+        activeItem.value = 'ciclo-contratacao';
     } else if (path.includes('configuracoes/geral')) {
         activeItem.value = 'config-geral';
         openSubmenus.value.push('config');

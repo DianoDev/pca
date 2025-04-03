@@ -17,6 +17,7 @@ class CicloContratacao extends Model
         'descricao',
         'data_inicio',
         'data_fim',
+        'numero_matricula_gestor',
         'status'
     ];
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Databases\Repositories;
 
 use App\Databases\Contracts\CicloContratacaoContract;
@@ -48,15 +49,23 @@ class CicloContratacaoRepository implements CicloContratacaoContract
      */
     public function paginate(array $pagination = [], array $columns = ['*']): LengthAwarePaginator
     {
-        $query = CicloContratacao::query();
-
+        $query = CicloContratacao::query()
+            ->leftJoin('publico.vw_sigp_funcionario', 'publico.vw_sigp_funcionario.numero_matricula', '=', 'ciclo_contratacao.numero_matricula_gestor')
+            ->select([
+                'ciclo_contratacao.id',
+                'ciclo_contratacao.data_inicio',
+                'ciclo_contratacao.data_fim',
+                'ciclo_contratacao.ano',
+                'ciclo_contratacao.status',
+                'publico.vw_sigp_funcionario.nome_funcionario',
+            ]);
         if (isset($pagination['ano'])) {
             $keyword = mb_strtolower($pagination['ano']);
             $query->whereRaw('lower(ano) like ?', ["%{$keyword}%"]);
         }
-        if (isset($pagination['descricao'])) {
-            $keyword = mb_strtolower($pagination['descricao']);
-            $query->whereRaw('lower(descricao) like ?', ["%{$keyword}%"]);
+        if (isset($pagination['nome_funcionario'])) {
+            $keyword = mb_strtolower($pagination['nome_funcionario']);
+            $query->whereRaw('lower(nome_funcionario) like ?', ["%{$keyword}%"]);
         }
         if (isset($pagination['data_inicio'])) {
             $keyword = mb_strtolower($pagination['data_inicio']);
@@ -84,9 +93,10 @@ class CicloContratacaoRepository implements CicloContratacaoContract
         try {
             $cicloContratacao = new CicloContratacao([
                 'ano' => $params['ano'],
-                'descricao' => $params['descricao'],
+                'numero_matricula_gestor' => $params['numero_matricula_gestor'],
                 'data_inicio' => $params['data_inicio'],
-                'data_fim' => $params['data_fim']
+                'data_fim' => $params['data_fim'],
+                'status' => 'C',
             ]);
             $cicloContratacao->save();
 

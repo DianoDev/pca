@@ -40,15 +40,10 @@ class CicloContratacaoController extends Controller
             'ano' => [
                 'type' => 'text',
             ],
-            'descricao' => [
-                'type' => 'text',
-            ],
-            'data_inicio' => [
-                'type' => 'text',
-            ],
-            'data_fim' => [
+            'nome_funcionario' => [
                 'type' => 'text',
             ]
+
         ];
         return response()->json($dados);
     }

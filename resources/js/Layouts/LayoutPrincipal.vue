@@ -90,6 +90,7 @@ const pageTitle = computed(() => {
     const urlTitles = {
         '/dashboard': 'Dashboard',
         '/organograma': 'Organograma de Setores',
+        '/ciclo-contratacao': 'Ciclo de Contratação',
         '/plano-contratacao-setor': 'Plano de Contratação do Setor',
         '/configuracoes/geral': 'Configurações Gerais',
         '/configuracoes/perfil': 'Configurações de Perfil',

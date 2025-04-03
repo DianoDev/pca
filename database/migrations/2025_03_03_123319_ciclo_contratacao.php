@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('ciclo_contratacao', function (Blueprint $table) {
             $table->id();
             $table->integer('ano');
-            $table->string('descricao');
+            $table->bigInteger('numero_matricula_gestor');
             $table->date('data_inicio');
             $table->date('data_fim');
             $table->char('status', 1); // A = Ativo, F = Finalizado, C = Cancelado

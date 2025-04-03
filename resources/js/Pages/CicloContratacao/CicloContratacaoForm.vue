@@ -32,7 +32,7 @@
       <div class="mb-4">
         <InputLabel
             for="ano"
-            value="Ano"
+            value="Exercicio"
             class="required"
             :class="{'text-gray-400': readOnly}"
         />
@@ -45,23 +45,6 @@
             :class="{'bg-gray-100 cursor-not-allowed': readOnly}"
         />
         <InputError :message="errors.ano"/>
-      </div>
-
-      <div class="mb-4">
-        <InputLabel
-            for="descricao"
-            value="Descrição"
-            class="required"
-            :class="{'text-gray-400': readOnly}"
-        />
-        <TextInput
-            id="descricao"
-            class="w-full"
-            v-model="form.descricao"
-            :disabled="readOnly"
-            :class="{'bg-gray-100 cursor-not-allowed': readOnly}"
-        />
-        <InputError :message="errors.descricao"/>
       </div>
 
       <div class="mb-4">
@@ -162,27 +145,6 @@
         <InputError :message="errors.data_fim"/>
       </div>
 
-      <div class="mb-4">
-        <InputLabel
-            for="status"
-            value="Status"
-            class="required"
-            :class="{'text-gray-400': readOnly}"
-        />
-        <select
-            id="status"
-            class="w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            v-model="form.status"
-            :disabled="readOnly"
-            :class="{'bg-gray-100 cursor-not-allowed': readOnly}"
-        >
-          <option value="">Por favor, selecione...</option>
-          <option value="A">Ativo</option>
-          <option value="F">Finalizado</option>
-          <option value="C">Cancelado</option>
-        </select>
-        <InputError :message="errors.status"/>
-      </div>
 
       <div class="w-full border-t border-gray-200 pt-4 mt-4">
         <!-- Botões para modo somente leitura -->
@@ -244,19 +206,21 @@ const form = ref({
 
 // Objetos para gerenciar separadamente dia/mês das datas
 const dataInicio = ref({
-  dia: '',
-  mes: ''
+  dia: '01',
+  mes: '01'
 });
 
 const dataFim = ref({
-  dia: '',
-  mes: ''
+  dia: '30',
+  mes: '06'
 });
 
+// Estados do formulário
 const errors = ref({});
 const processing = ref(false);
 const ready = ref(false);
 const readOnly = ref(false);
+
 
 function extrairDiaMes(dataISO) {
   if (!dataISO) return { dia: '', mes: '' };
@@ -405,13 +369,9 @@ function close() {
 const loadData = async () => {
   try {
     if (props.data?.id) {
-      const response = await axios.get(`/plano-contratacao-setor/gestorInfo`);
+      const response = await axios.get(`/ciclo-contratacao/${props.data.id}`);
       const data = response.data;
 
-      form.value.codigo_setor = response.data.codigo_setor || '';
-      form.value.numero_matricula_gestor = response.data.responsavel || '';
-      form.value.nome_funcionario = response.data.nome_funcionario || '';
-      form.value.nome_setor_formatado = response.data.nome_setor_formatado || '';
       // Preencher o formulário
       form.value = {
         ano: data.ano || '',
@@ -448,6 +408,13 @@ const loadData = async () => {
 };
 
 onMounted(async () => {
+  const response = await axios.get(`/plano-contratacao-setor/gestorInfo`);
+  const data = response.data;
+
+  form.value.codigo_setor = response.data.codigo_setor || '';
+  form.value.numero_matricula_gestor = response.data.responsavel || '';
+  form.value.nome_funcionario = response.data.nome_funcionario || '';
+  form.value.nome_setor_formatado = response.data.nome_setor_formatado || '';
   await loadData();
 });
 </script>
