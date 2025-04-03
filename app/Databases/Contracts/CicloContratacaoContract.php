@@ -5,7 +5,7 @@ namespace App\Databases\Contracts;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-interface PlanoContratacaoEntidadeContract
+interface CicloContratacaoContract
 {
     public function paginate(array $pagination = [], array $columns = ['*']): LengthAwarePaginator;
     public function getAll();

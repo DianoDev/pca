@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CicloContratacao\CicloContratacaoController;
 use App\Http\Controllers\ItemProrrogacao\ItemProrrogacaoController;
 use App\Http\Controllers\ItemContratacao\ItemContratacaoController;
 use App\Http\Controllers\PlanoContratacao\PlanoContratacaoSetorController;
@@ -95,4 +96,13 @@ Route::group(['prefix' => 'plano-contratacao-tce','middleware' => ['auth','setor
     Route::post('/', [PlanoContratacaoEntidadeController::class, 'create'])->name('plano_contratacao.create');
     Route::post('/{id}', [PlanoContratacaoEntidadeController::class, 'update'])->name('plano_contratacao.update');
     Route::delete('/{id}', [PlanoContratacaoEntidadeController::class, 'delete'])->name('plano_contratacao.delete');
+});
+
+Route::group(['prefix' => 'ciclo-contratacao'], function () {
+    Route::get('/', [CicloContratacaoController::class, 'index'])->name('ciclo_contratacao.index');
+    Route::get('/list', [CicloContratacaoController::class, 'list'])->name('ciclo_contratacao.list');
+    Route::get('/{id}', [CicloContratacaoController::class, 'edit'])->name('ciclo_contratacao.edit');
+    Route::post('/', [CicloContratacaoController::class, 'create'])->name('ciclo_contratacao.create');
+    Route::post('/{id}', [CicloContratacaoController::class, 'update'])->name('ciclo_contratacao.update');
+    Route::delete('/{id}', [CicloContratacaoController::class, 'delete'])->name('ciclo_contratacao.delete');
 });

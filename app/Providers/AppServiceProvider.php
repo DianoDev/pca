@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Databases\Contracts\PlanoContratacaoEntidadeContract;
+use App\Databases\Contracts\CicloContratacaoContract;
+use App\Databases\Repositories\CicloContratacaoRepository;
 use App\Databases\Repositories\PlanoContratacaoEntidadeRepository;
 use Illuminate\Support\Facades\Vite;
 use App\Databases\Contracts\ItemProrrogacaoContract;
@@ -30,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        app()->bind(CicloContratacaoContract::class, CicloContratacaoRepository::class);
         app()->bind(ItemProrrogacaoContract::class, ItemProrrogacaoRepository::class);
         app()->bind(ItemContratacaoContract::class, ItemContratacaoRepository::class);
         app()->bind(PlanoContratacaoSetorContract::class, PlanoContratacaoSetorRepository::class);

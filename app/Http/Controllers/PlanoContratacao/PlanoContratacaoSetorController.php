@@ -29,7 +29,7 @@ class PlanoContratacaoSetorController extends Controller
      */
     public function index()
     {
-        $hierarquia = Session::get('setor')->hierarquia;
+        $hierarquia = Session::get('setor_info')->hierarquia;
         return Inertia::render('PlanoContratacao/PlanoContratacaoSetor', [
             'hierarquia' => $hierarquia
         ]);

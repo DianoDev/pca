@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('plano_contratacao', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_ciclo');
             $table->unsignedBigInteger('codigo_setor');
             $table->unsignedBigInteger('numero_matricula_gestor_criador');
             $table->unsignedBigInteger('numero_matricula_gestor_finalizador')->nullable();
@@ -29,6 +30,10 @@ return new class extends Migration
                 ->references('codigo_setor')
                 ->on('setor_pca')
                 ->onDelete('cascade');
+
+            $table->foreign('id_ciclo')
+                ->references('id')
+                ->on('ciclo_contratacao');
 
         });
     }
