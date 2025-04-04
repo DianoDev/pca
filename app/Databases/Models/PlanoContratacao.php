@@ -20,6 +20,9 @@ class PlanoContratacao extends Model
         return $this->belongsTo(SetorPCA::class, 'codigo_setor', 'codigo_setor');
     }
 
+
+
+
     public function gestor(): BelongsTo
     {
         return $this->belongsTo(VwSetorGestor::class, 'codigo_setor', 'codigo_setor');

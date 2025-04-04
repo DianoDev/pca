@@ -29,4 +29,18 @@ class AprovacaoContratacao extends Model
         'status',
         'observacao',
     ];
+
+    /**
+     * Relacionamento: um ciclo tem muitos planos
+     */
+    public function plano()
+    {
+        return $this->belongsTo(PlanoContratacao::class, 'id_plano_contratacao');
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(VwSigpFuncionario::class, 'numero_matricula_aprovacao', 'numero_matricula')
+            ->select(['numero_matricula', 'nome_funcionario']);
+    }
 }

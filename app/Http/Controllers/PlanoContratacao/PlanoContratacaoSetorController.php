@@ -93,6 +93,17 @@ class PlanoContratacaoSetorController extends Controller
         $gestor = VwSetorGestor::query()->where('logon','=', $Usuario->name)->first();
         return response()->json($gestor);
     }
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return JsonResponse
+     */
+    public function aprovacao_contratacao($id)
+    {
+        $aprovacao = AprovacaoContratacao::query()->with(['plano.setor.nome_setor','usuario'])->where('id_plano_contratacao', '=', $id)->get();
+        return response()->json($aprovacao);
+    }
 
     /**
      * Get list of resources for datatable.
@@ -157,7 +168,7 @@ class PlanoContratacaoSetorController extends Controller
             $aprovacaoContratacao = new AprovacaoContratacao([
                 'id_plano_contratacao' => $id,
                 'numero_matricula_aprovacao' => $matricula->responsavel,
-                'status' => 'P'
+                'status' => 'E'
             ]);
             $aprovacaoContratacao->save();
             // Atualizar o status

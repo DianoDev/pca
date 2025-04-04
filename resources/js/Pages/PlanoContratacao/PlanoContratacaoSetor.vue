@@ -227,12 +227,16 @@
                                                 </button>
                                             </div>
                                             <div v-if="hasPlanForSelectedYear.status === 'E'" class="flex items-center">
-                                                <span :class="[
-                                                    'inline-flex px-3 py-1 text-sm font-medium rounded-full text-white',
-                                                    getStatusBadgeColor(hasPlanForSelectedYear.status)
-                                                ]">
-                                                    Enviado
-                                                </span>
+                                                <popup-icon
+                                                    id="novo-plano"
+                                                    title="Historico"
+                                                    size="xl"
+                                                    component="AprovacaoContratacao"
+                                                    :data="{idPlano: hasPlanForSelectedYear.id}"
+                                                    variant="primary"
+                                                >
+                                                    Histórico
+                                                </popup-icon>
                                             </div>
                                         </div>
                                     </div>
@@ -309,6 +313,7 @@ import LayoutPrincipal from "@/Layouts/LayoutPrincipal.vue";
 import ItemContratacaoGrid from "@/Pages/ItemContratacao/ItemContratacaoGrid.vue";
 import ItemProrrogacaoGrid from "@/Pages/ItemProrrogacao/ItemProrrogacaoGrid.vue";
 import {usePage} from '@inertiajs/vue3';
+import PopupIcon from "@/Components/PopupIcon.vue";
 
 const valor_contratacao = ref(null);
 const valor_prorrogacao = ref(null);

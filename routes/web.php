@@ -59,6 +59,7 @@ Route::group(['prefix' => 'plano-contratacao-setor','middleware' => ['auth','set
     Route::get('/list', [PlanoContratacaoSetorController::class, 'list'])->name('plano_contratacao.list');
     Route::get('/years', [PlanoContratacaoSetorController::class, 'getYears'])->name('plano_contratacao.getYears');
     Route::get('/exists', [PlanoContratacaoSetorController::class, 'exists'])->name('plano_contratacao.exists');
+    Route::get('/aprovacao-contratacao/{id}', [PlanoContratacaoSetorController::class, 'aprovacao_contratacao'])->name('plano_contratacao.aprovacao_contratacao');
     Route::get('/gestorInfo', [PlanoContratacaoSetorController::class, 'gestorInfo'])->name('plano_contratacao.edit');
     Route::post('/updatestatus/{id}', [PlanoContratacaoSetorController::class, 'updateStatus'])->name('plano_contratacao.updateStatus');
     Route::post('/', [PlanoContratacaoSetorController::class, 'create'])->name('plano_contratacao.create');
