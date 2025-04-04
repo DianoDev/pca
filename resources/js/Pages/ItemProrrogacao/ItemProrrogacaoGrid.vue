@@ -17,7 +17,11 @@ const events = inject('events');
 const source = ref('');
 const hasPlanForSelectedYear = ref(null);
 const ready = ref(false);
-
+const props = defineProps({
+    plano_status: {
+        default: null,
+    }
+});
 // Datatable columns para Itens de Prorrogação
 const columns = ref([
     {
@@ -60,7 +64,7 @@ const columns = ref([
         nowrap: true,
         formatter: (value, row) => {
             let output = "";
-            if (row.status !== 'A') {
+            if (row.status !== 'A' &&  props.plano_status === 'P') {
                 output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Editar" data-action="popup" data-size="xl" data-component="ItemProrrogacaoForm" data-title="Editar Item de Prorrogação" class="mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-pencil text-blue-600"></i></a>`;
                 output += `<a href="javascript:;" data-json='{"id": "${value}","tipo": "prorrogacao"}' data-tooltip="Remover" data-action="delete" class="action mx-0 action-delete tooltip tooltip--top"><i class="fa fa-trash mx-1 text-blue-600"></i></a>`;
             }
@@ -122,6 +126,43 @@ const confirmRemove = async (data) => {
 };
 
 const loadData = async () => {
+    if (props.plano_status !== 'P') {
+        columns.value = ([
+            {
+                name: 'objeto',
+                title: 'Objeto',
+                width: '25%',
+                sort: 'objeto',
+                nowrap: true,
+                formatter: (value) => {
+                    return value && value.length > 40 ?
+                        `<span title="${value.replace(/"/g, '&quot;')}">${value.substring(0, 40)}...</span>` :
+                        value;
+                }
+            },
+            {name: 'numero', title: 'Número', width: '15%', sort: 'numero', nowrap: true},
+            {
+                name: 'valor_global',
+                title: 'Valor Global',
+                width: '15%',
+                sort: 'valor_global',
+                nowrap: true,
+                formatter: (value) => {
+                    return value ? `R$ ${parseFloat(value).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : '';
+                }
+            },
+            {
+                name: 'status',
+                title: 'Status',
+                width: '15%',
+                sort: 'status',
+                nowrap: true,
+                formatter: (value) => {
+                    return `<span class="inline-flex px-2 py-1 text-xs font-medium rounded-full text-white ${getStatusBadgeColor(value)}">${formatStatusContrato(value)}</span>`;
+                }
+            }
+        ]);
+    }
     try {
         events.emit('loading', true);
         const response = await axios.get(`/plano-contratacao-setor/exists?exercicio=${selectedYear.value}`);

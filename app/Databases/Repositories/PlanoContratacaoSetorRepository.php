@@ -2,12 +2,14 @@
 namespace App\Databases\Repositories;
 
 use App\Databases\Contracts\PlanoContratacaoSetorContract;
+use App\Databases\Models\CicloContratacao;
 use App\Databases\Models\PlanoContratacao;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use function Pest\Laravel\json;
 
 class PlanoContratacaoSetorRepository implements PlanoContratacaoSetorContract
 {
@@ -94,7 +96,12 @@ class PlanoContratacaoSetorRepository implements PlanoContratacaoSetorContract
     {
         $autoCommit && DB::beginTransaction();
         try {
+            $cicloContratacao = CicloContratacao::query()->where('ano', '=', $params['exercicio'])->first();
+            if(!$cicloContratacao){
+                return response()->json(['Ciclo do ano não Iniciado']);
+            }
             $planoContratacao = new PlanoContratacao([
+                'id_ciclo' => $cicloContratacao->id,
                 'codigo_setor' => $params['codigo_setor'],
                 'numero_matricula_gestor_criador' => $params['numero_matricula_gestor'],
                 'exercicio' => $params['exercicio'],

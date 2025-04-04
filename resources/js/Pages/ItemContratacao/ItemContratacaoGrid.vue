@@ -17,7 +17,11 @@ const events = inject('events');
 const source = ref('');
 const hasPlanForSelectedYear = ref(null);
 const ready = ref(false);
-
+const props = defineProps({
+    plano_status: {
+        default: null,
+    }
+});
 // Datatable columns para Itens de Prorrogação
 const columns = ref([
     {
@@ -150,6 +154,52 @@ const confirmRemove = async (data) => {
 };
 
 const loadData = async () => {
+    if (props.plano_status !== 'P') {
+        columns.value = ([
+            {
+                name: 'descricao',
+                title: 'Descrição',
+                width: '25%',
+                sort: 'descricao',
+                nowrap: true,
+                formatter: (value) => {
+                    return value && value.length > 20 ?
+                        `<span title="${value.replace(/"/g, '&quot;')}">${value.substring(0, 20)}...</span>` :
+                        value;
+                }
+            },
+            {
+                name: 'valor_total',
+                title: 'Valor Total',
+                width: '15%',
+                sort: 'valor_total',
+                nowrap: true,
+                formatter: (value) => {
+                    return value ? `R$ ${parseFloat(value).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : '';
+                }
+            },
+            {
+                name: 'classificacao',
+                title: 'Classificação',
+                width: '15%',
+                sort: 'classificacao',
+                nowrap: true,
+                formatter: (value) => {
+                    return formatClassificacao(value);
+                }
+            },
+            {
+                name: 'status',
+                title: 'Status',
+                width: '15%',
+                sort: 'status',
+                nowrap: true,
+                formatter: (value) => {
+                    return `<span class="inline-flex px-2 py-1 text-xs font-medium rounded-full text-white ${getStatusBadgeColor(value)}">${formatStatus(value)}</span>`;
+                }
+            },
+        ]);
+    }
     try {
         events.emit('loading', true);
         const response = await axios.get(`/plano-contratacao-setor/exists?exercicio=${selectedYear.value}`);

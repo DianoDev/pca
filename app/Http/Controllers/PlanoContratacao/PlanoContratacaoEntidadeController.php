@@ -95,12 +95,14 @@ class PlanoContratacaoEntidadeController extends Controller
             $status = $request->input('status');
 
             // Validar se o status é válido (A = Aprovado ou R = Reprovado)
-            if (!in_array($status, ['A', 'R'])) {
+            if (!in_array($status, ['A','E', 'R'])) {
                 return response()->json(['error' => 'Status inválido'], 400);
             }
 
             // Buscar o plano
             $plano = PlanoContratacao::findOrFail($id);
+
+            $aprovacao =
 
             // Atualizar o status
             $plano->status = $status;

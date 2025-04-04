@@ -4,6 +4,10 @@ namespace App\Http\Controllers\PlanoContratacao;
 
 use App\Databases\Contracts\PlanoContratacaoSetorContract;
 use App\Databases\Contracts\UsuarioSetorContract;
+use App\Databases\Models\AprovacaoContratacao;
+use App\Databases\Models\CicloHierarquia;
+use App\Databases\Models\ItemContratacao;
+use App\Databases\Models\ItemProrrogacao;
 use App\Databases\Models\VwSetorGestor;
 use App\Http\Requests\UsuarioSetorRequest;
 use Illuminate\Http\JsonResponse;
@@ -129,6 +133,42 @@ class PlanoContratacaoSetorController extends Controller
             'last_page' => ceil($total / $perPage)
         ]);
     }
+    /**
+     * Update the plan status (approve or reject).
+     *
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function updateStatus(int $id, Request $request): JsonResponse
+    {
+        try {
+            $status = $request->input('status');
+
+            // Validar se o status é válido (A = Aprovado ou R = Reprovado)
+            if (!in_array($status, ['A','E', 'R'])) {
+                return response()->json(['error' => 'Status inválido'], 400);
+            }
+
+            // Buscar o plano
+            $plano = PlanoContratacao::findOrFail($id);
+            $Usuario = auth()->user();
+            $matricula = VwsetorGestor::query()->where('logon','=',$Usuario->name)->first();
+            $aprovacaoContratacao = new AprovacaoContratacao([
+                'id_plano_contratacao' => $id,
+                'numero_matricula_aprovacao' => $matricula->responsavel,
+                'status' => 'P'
+            ]);
+            $aprovacaoContratacao->save();
+            // Atualizar o status
+            $plano->status = $status;
+            $plano->save();
+
+            return response()->json(['success' => true, 'message' => 'Status atualizado com sucesso']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro ao atualizar status: ' . $e->getMessage()], 500);
+        }
+    }
 
     /**
      * Get all years that have plans.
@@ -160,18 +200,50 @@ class PlanoContratacaoSetorController extends Controller
      */
     public function exists(Request $request)
     {
-
         $cod_setor = Session::get('setor');
         $exercicio = $request->input('exercicio');
+        $hierarquia = Session::get('setor_info')->hierarquia;
 
         if (!$exercicio) {
             return response()->json(['exists' => false]);
         }
 
-        $exists = PlanoContratacao::query()->with('gestor')
-            ->where('codigo_setor',$cod_setor)
-            ->where('exercicio', $exercicio)->first();
+        // Primeiro, buscar o plano de contratação
+        $planoContratacao = PlanoContratacao::query()
+            ->with(['gestor', 'ciclo'])
+            ->where('codigo_setor', $cod_setor)
+            ->where('exercicio', $exercicio)
+            ->first();
 
-        return response()->json(['exists' => $exists]);
+        // Valores padrão
+        $item_prorrogacao = 0;
+        $item_contratacao = 0;
+
+        if ($planoContratacao) {
+            // Buscar dados da hierarquia
+            $cicloHierarquia = CicloHierarquia::query()
+                ->where('hierarquia', $hierarquia)
+                ->first();
+
+            // Adicionar informações da hierarquia ao resultado se existir
+            if ($cicloHierarquia) {
+                $planoContratacao->ciclo_hierarquia = $cicloHierarquia;
+            }
+
+            // Buscar somas usando o ID do plano, não o objeto inteiro
+            $item_prorrogacao = ItemProrrogacao::query()
+                ->where('id_plano_contratacao', $planoContratacao->id)
+                ->sum('valor_global');
+
+            $item_contratacao = ItemContratacao::query()
+                ->where('id_plano_contratacao', $planoContratacao->id)
+                ->sum('valor_total');
+        }
+
+        return response()->json([
+            'exists' => $planoContratacao,
+            'valor_prorrogacao' => $item_prorrogacao,
+            'valor_contratacao' => $item_contratacao
+        ]);
     }
 }

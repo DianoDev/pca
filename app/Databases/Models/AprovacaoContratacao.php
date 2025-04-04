@@ -24,8 +24,8 @@ class AprovacaoContratacao extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'id_fase_contratacao',
-        'numero_matricula',
+        'id_plano_contratacao',
+        'numero_matricula_aprovacao',
         'status',
         'observacao',
     ];
