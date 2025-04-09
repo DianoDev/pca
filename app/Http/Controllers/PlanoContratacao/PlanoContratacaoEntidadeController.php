@@ -4,6 +4,8 @@ namespace App\Http\Controllers\PlanoContratacao;
 
 use App\Databases\Contracts\PlanoContratacaoEntidadeContract;
 use App\Databases\Contracts\UsuarioTceContract;
+use App\Databases\Models\ItemContratacao;
+use App\Databases\Models\ItemProrrogacao;
 use App\Databases\Models\VwSetorGestor;
 use App\Databases\Models\VwTceGestor;
 use App\Http\Requests\UsuarioTceRequest;
@@ -53,6 +55,7 @@ class PlanoContratacaoEntidadeController extends Controller
                     'plano_contratacao.valor_total',
                     'plano_contratacao.status',
                     'plano_contratacao.email',
+                    'plano_contratacao.hierarquia_aprovacao',
                     'plano_contratacao.telefone',
                     'plano_contratacao.numero_matricula_gestor_criador',
                     'vw_setor_gestor.nome_setor_formatado as setor_nome',
@@ -60,7 +63,7 @@ class PlanoContratacaoEntidadeController extends Controller
                 ])
                 ->where('plano_contratacao.id', $id)
                 ->first();
-
+            $setor_info = session()->get('setor_info');
             if (!$plano) {
                 // Se o plano não for encontrado, passar um objeto vazio
                 return Inertia::render('PlanoContratacao/PlanoContratacaoValidacao', [
@@ -68,16 +71,25 @@ class PlanoContratacaoEntidadeController extends Controller
                     'erro' => 'Plano não encontrado'
                 ]);
             }
+            $item_prorrogacao = ItemProrrogacao::query()
+                ->where('id_plano_contratacao', $plano->id)
+                ->sum('valor_global');
 
+            $item_contratacao = ItemContratacao::query()
+                ->where('id_plano_contratacao', $plano->id)
+                ->sum('valor_total');
             // Passar o plano diretamente para o componente
             return Inertia::render('PlanoContratacao/PlanoContratacaoValidacao', [
-                'plano' => $plano
+                'plano' => $plano,
+                'hierarquia_setor' => $setor_info->hierarquia,
+                'valor_prorrogacao' => $item_prorrogacao,
+                'valor_contratacao' => $item_contratacao
             ]);
         } catch (\Exception $e) {
             // Em caso de erro, passar mensagem de erro
             return Inertia::render('PlanoContratacao/PlanoContratacaoValidacao', [
                 'plano' => null,
-                'erro' => 'Erro ao buscar plano: ' . $e->getMessage()
+                'erro' => 'Erro ao buscar plano: ' . $e->getMessage(),
             ]);
         }
     }

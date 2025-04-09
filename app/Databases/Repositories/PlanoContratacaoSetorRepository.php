@@ -100,10 +100,12 @@ class PlanoContratacaoSetorRepository implements PlanoContratacaoSetorContract
             if(!$cicloContratacao){
                 return response()->json(['Ciclo do ano não Iniciado']);
             }
+            $setor_info = session()->get('setor_info');
             $planoContratacao = new PlanoContratacao([
                 'id_ciclo' => $cicloContratacao->id,
                 'codigo_setor' => $params['codigo_setor'],
                 'numero_matricula_gestor_criador' => $params['numero_matricula_gestor'],
+                'hierarquia_aprovacao' => $setor_info->hierarquia,
                 'exercicio' => $params['exercicio'],
                 'email' => $params['email'],
                 'telefone' => $params['telefone'],
