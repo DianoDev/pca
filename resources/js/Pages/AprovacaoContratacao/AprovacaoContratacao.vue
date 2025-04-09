@@ -53,7 +53,7 @@
                     </div>
 
                     <div class="text-sm text-gray-600 mb-2">
-                        {{aprovacao.plano.setor.nome_setor.nome_setor_formatado }}
+                        {{aprovacao.nome_setor.nome_setor_formatado }}
                     </div>
                     <div class="text-sm text-gray-600 mb-2">
                         <i class="fa fa-clock mr-1"></i>
@@ -115,7 +115,7 @@ const fetchAprovacoes = async () => {
         const response = await axios.get(`/plano-contratacao-setor/aprovacao-contratacao/${props.idPlano}`);
 
         // Ordenar por data (mais recente primeiro)
-        aprovacoes.value = response.data.sort((a, b) => {
+        aprovacoes.value = response.data.sort((b, a) => {
             return new Date(b.created_at) - new Date(a.created_at);
         });
     } catch (err) {

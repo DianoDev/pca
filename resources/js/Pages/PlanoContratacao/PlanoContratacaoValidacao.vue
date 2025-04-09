@@ -349,7 +349,7 @@ const updateStatus = async (status) => {
     try {
         events.emit('loading', true);
 
-        await axios.post(`/plano-contratacao-tce/updatestatus/${planoSelecionado.value.id}`, {
+        await axios.post(`/plano-contratacao-setor/updatestatus/${planoSelecionado.value.id}`, {
             status: status
         });
 

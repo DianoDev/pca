@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('aprovacao_contratacao', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_plano_contratacao');
+            $table->unsignedBigInteger('codigo_setor');
             $table->integer('numero_matricula_aprovacao');
             $table->integer('hierarquia_aprovacao')->nullable();
             $table->char('status', 1);

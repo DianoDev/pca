@@ -29,7 +29,7 @@
                         </li>
 
                         <!-- Organograma -->
-                        <li v-if="setorInfo.hierarquia === 1" class="menu-item" :class="{ 'active': isActive('organograma') }">
+                        <li v-if="setorInfo.hierarquia === '1'" class="menu-item" :class="{ 'active': isActive('organograma') }">
                             <a href="/organograma" class="menu-link">
                                 <span class="menu-icon">
                                     <i class="fa fa-sitemap"></i>
@@ -38,7 +38,7 @@
                             </a>
                         </li>
 
-                        <li v-if="setorInfo.hierarquia === 1" class="menu-item" :class="{ 'active': isActive('ciclo-contratacao') }">
+                        <li v-if="setorInfo.hierarquia === '1'" class="menu-item" :class="{ 'active': isActive('ciclo-contratacao') }">
                             <a href="/ciclo-contratacao" class="menu-link">
                                 <span class="menu-icon">
                                     <i class="fa fa-calendar-check"></i>

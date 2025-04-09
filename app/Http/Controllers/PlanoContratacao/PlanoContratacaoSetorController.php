@@ -101,7 +101,7 @@ class PlanoContratacaoSetorController extends Controller
      */
     public function aprovacao_contratacao($id)
     {
-        $aprovacao = AprovacaoContratacao::query()->with(['plano.setor.nome_setor','usuario'])->where('id_plano_contratacao', '=', $id)->get();
+        $aprovacao = AprovacaoContratacao::query()->with(['plano.setor','nome_setor','usuario'])->where('id_plano_contratacao', '=', $id)->orderBy('created_at','asc')->get();
         return response()->json($aprovacao);
     }
 
@@ -160,13 +160,14 @@ class PlanoContratacaoSetorController extends Controller
             if (!in_array($status, ['A','E', 'R'])) {
                 return response()->json(['error' => 'Status inválido'], 400);
             }
-
+            $cod_setor = Session::get('setor');
             // Buscar o plano
             $plano = PlanoContratacao::findOrFail($id);
             $Usuario = auth()->user();
             $matricula = VwsetorGestor::query()->where('logon','=',$Usuario->name)->first();
             $aprovacaoContratacao = new AprovacaoContratacao([
                 'id_plano_contratacao' => $id,
+                'codigo_setor' => $cod_setor,
                 'numero_matricula_aprovacao' => $matricula->responsavel,
                 'status' => 'E'
             ]);

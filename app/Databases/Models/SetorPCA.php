@@ -28,10 +28,10 @@ class SetorPCA extends Model
         return $this->belongsTo(SetorPca::class, 'codigo_setor_pai', 'codigo_setor');
     }
 
-    // Relacionamento com o setor pai
     public function nome_setor()
     {
-        return $this->belongsTo(VwSetorGestor::class, 'codigo_setor', 'codigo_setor');
+        return $this->belongsTo(VwSigpSetorSecorp::class, 'codigo_setor', 'codigo_setor')
+            ->select(['codigo_setor', 'nome_setor_formatado']);
     }
 
     // Relacionamento com os setores filhos

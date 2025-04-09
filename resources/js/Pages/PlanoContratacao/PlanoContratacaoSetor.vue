@@ -218,7 +218,7 @@
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-500">Aprovação do PCA</h4>
-                                            <div v-if="hasPlanForSelectedYear.status === 'P'" class="flex items-center">
+                                            <div v-if="hasPlanForSelectedYear.status === 'P'  " class="flex items-center">
                                                 <button
                                                     @click="updateStatus('E')"
                                                     class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md "
@@ -226,7 +226,7 @@
                                                     <i class="fa fa-check mr-2"></i> Enviar
                                                 </button>
                                             </div>
-                                            <div v-if="hasPlanForSelectedYear.status === 'E'" class="flex items-center">
+                                            <div v-if="hasPlanForSelectedYear.status === 'E' || hasPlanForSelectedYear.status === 'A'" class="flex items-center">
                                                 <popup-icon
                                                     id="novo-plano"
                                                     title="Historico"

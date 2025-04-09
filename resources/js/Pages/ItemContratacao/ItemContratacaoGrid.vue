@@ -104,7 +104,7 @@ const formatClassificacao = (value) => {
 const formatStatus = (value) => {
     switch (value) {
         case 'E':
-            return 'Em andamento';
+            return 'Pendente Aprovação';
         case 'A':
             return 'Aprovado';
         case 'R':
