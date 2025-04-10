@@ -4,9 +4,12 @@ namespace App\Http\Controllers\PlanoContratacao;
 
 use App\Databases\Contracts\PlanoContratacaoEntidadeContract;
 use App\Databases\Contracts\UsuarioTceContract;
+use App\Databases\Models\AprovacaoContratacao;
 use App\Databases\Models\ItemContratacao;
 use App\Databases\Models\ItemProrrogacao;
+use App\Databases\Models\SetorPCA;
 use App\Databases\Models\VwSetorGestor;
+use App\Databases\Models\VwSigpSetorSecorp;
 use App\Databases\Models\VwTceGestor;
 use App\Http\Requests\UsuarioTceRequest;
 use Illuminate\Http\JsonResponse;
@@ -48,6 +51,7 @@ class PlanoContratacaoEntidadeController extends Controller
             $plano = PlanoContratacao::query()
                 ->leftJoin('vw_setor_gestor', 'vw_setor_gestor.codigo_setor', '=', 'plano_contratacao.codigo_setor')
                 ->leftJoin('publico.vw_sigp_funcionario', 'publico.vw_sigp_funcionario.numero_matricula', '=', 'plano_contratacao.numero_matricula_gestor_criador')
+                ->leftJoin('setor_pca', 'setor_pca.codigo_setor', '=', 'plano_contratacao.codigo_setor')
                 ->select([
                     'plano_contratacao.id',
                     'plano_contratacao.codigo_setor',
@@ -58,19 +62,36 @@ class PlanoContratacaoEntidadeController extends Controller
                     'plano_contratacao.hierarquia_aprovacao',
                     'plano_contratacao.telefone',
                     'plano_contratacao.numero_matricula_gestor_criador',
+                    'setor_pca.hierarquia',
                     'vw_setor_gestor.nome_setor_formatado as setor_nome',
                     'publico.vw_sigp_funcionario.nome_funcionario as gestor_nome'
                 ])
                 ->where('plano_contratacao.id', $id)
                 ->first();
             $setor_info = session()->get('setor_info');
-            if (!$plano) {
-                // Se o plano não for encontrado, passar um objeto vazio
-                return Inertia::render('PlanoContratacao/PlanoContratacaoValidacao', [
-                    'plano' => null,
-                    'erro' => 'Plano não encontrado'
-                ]);
+            if($setor_info->hierarquia === $plano->hierarquia_aprovacao){
+                $setor_aprovacao = VwSigpSetorSecorp::query()->where('codigo_setor','=',$setor_info->codigo_setor)->first();
+                $setor_aprovacao = $setor_aprovacao->nome_setor;
             }
+            elseif($plano->hierarquia_aprovacao === "4"){
+                $setor = SetorPCA::query()->where('codigo_setor', $plano->codigo_setor)->first();
+                $setor_aprovacao = VwSigpSetorSecorp::query()->where('codigo_setor','=',$setor->codigo_setor)->first();
+                $setor_aprovacao = $setor_aprovacao->nome_setor;
+            }
+            elseif($plano->hierarquia_aprovacao === "0"){
+                $setor = SetorPCA::query()->where('hierarquia', '=','2')->first();
+                $setor_aprovacao = VwSigpSetorSecorp::query()->where('codigo_setor','=',$setor->codigo_setor)->first();
+                $setor_aprovacao = $setor_aprovacao->nome_setor;
+            }
+            elseif($plano->hierarquia_aprovacao === "-1"){
+                $setor_aprovacao = 'Plano Aprovado';
+            }
+            else{
+                $setor = SetorPCA::query()->where('hierarquia', $plano->hierarquia_aprovacao)->first();
+                $setor_aprovacao = VwSigpSetorSecorp::query()->where('codigo_setor','=',$setor->codigo_setor)->first();
+                $setor_aprovacao = $setor_aprovacao->nome_setor;
+            }
+
             $item_prorrogacao = ItemProrrogacao::query()
                 ->where('id_plano_contratacao', $plano->id)
                 ->sum('valor_global');
@@ -82,6 +103,7 @@ class PlanoContratacaoEntidadeController extends Controller
             return Inertia::render('PlanoContratacao/PlanoContratacaoValidacao', [
                 'plano' => $plano,
                 'hierarquia_setor' => $setor_info->hierarquia,
+                'setor_aprovacao_atual' => $setor_aprovacao,
                 'valor_prorrogacao' => $item_prorrogacao,
                 'valor_contratacao' => $item_contratacao
             ]);
@@ -94,6 +116,7 @@ class PlanoContratacaoEntidadeController extends Controller
         }
     }
 
+
     /**
      * Update the plan status (approve or reject).
      *
@@ -105,22 +128,82 @@ class PlanoContratacaoEntidadeController extends Controller
     {
         try {
             $status = $request->input('status');
+            $cod_setor = Session::get('setor');
+            $plano = PlanoContratacao::findOrFail($id);
+            $Usuario = auth()->user();
+            $matricula = VwsetorGestor::query()->where('logon','=',$Usuario->name)->first();
 
-            // Validar se o status é válido (A = Aprovado ou R = Reprovado)
-            if (!in_array($status, ['A','E', 'R'])) {
-                return response()->json(['error' => 'Status inválido'], 400);
+            // Recuperar todos os itens que não estão reprovados
+            $itens_contratacao = ItemContratacao::query()->where('id_plano_contratacao', $id)->where('status','!=','R')->get();
+            $itens_prorrogacao = ItemProrrogacao::query()->where('id_plano_contratacao', $id)->where('status','!=','R')->get();
+
+            // Atualizar o status de todos os itens de contratação
+            foreach ($itens_contratacao as $item) {
+                $item->status = $status;
+                $item->save();
             }
 
-            // Buscar o plano
-            $plano = PlanoContratacao::findOrFail($id);
+            // Atualizar o status de todos os itens de prorrogação
+            foreach ($itens_prorrogacao as $item) {
+                $item->status = $status;
+                $item->save();
+            }
 
-            $aprovacao =
-
-            // Atualizar o status
-            $plano->status = $status;
+            $plano->hierarquia_aprovacao = $plano->hierarquia_aprovacao - 1;
             $plano->save();
 
-            return response()->json(['success' => true, 'message' => 'Status atualizado com sucesso']);
+            $aprovacaoContratacao = new AprovacaoContratacao([
+                'id_plano_contratacao' => $id,
+                'codigo_setor' => $cod_setor,
+                'numero_matricula_aprovacao' => $matricula->responsavel,
+                'status' => $status // Usar o mesmo status que foi solicitado
+            ]);
+            $aprovacaoContratacao->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status do plano e de todos os itens atualizado com sucesso',
+                'itens_contratacao_atualizados' => $itens_contratacao->count(),
+                'itens_prorrogacao_atualizados' => $itens_prorrogacao->count()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro ao atualizar status: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+    /**
+     * Update the plan status (approve or reject).
+     *
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function aprovaplano(int $id, Request $request): JsonResponse
+    {
+        try {
+            $status = $request->input('status');
+            $cod_setor = Session::get('setor');
+            $plano = PlanoContratacao::findOrFail($id);
+            $Usuario = auth()->user();
+            $matricula = VwsetorGestor::query()->where('logon','=',$Usuario->name)->first();
+
+
+            $plano->hierarquia_aprovacao = $plano->hierarquia_aprovacao - 1;
+            $plano->status  = $status;
+            $plano->save();
+
+            $aprovacaoContratacao = new AprovacaoContratacao([
+                'id_plano_contratacao' => $id,
+                'codigo_setor' => $cod_setor,
+                'numero_matricula_aprovacao' => $matricula->responsavel,
+                'status' => $status // Usar o mesmo status que foi solicitado
+            ]);
+            $aprovacaoContratacao->save();
+            return response()->json([
+                'success' => true,
+                'message' => 'Status do plano e de todos os itens atualizado com sucesso',
+            ]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Erro ao atualizar status: ' . $e->getMessage()], 500);
         }

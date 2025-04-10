@@ -217,7 +217,7 @@ const columns = ref([
 const formatStatus = (status) => {
     switch (status) {
         case 'E':
-            return 'Em andamento';
+            return 'Enviado';
         case 'A':
             return 'Aprovado';
         case 'R':
@@ -231,13 +231,13 @@ const formatStatus = (status) => {
 
 const getStatusBadgeColor = (status) => {
     switch (status) {
-        case 'E':
+        case 'I':
             return 'bg-yellow-500';
         case 'A':
             return 'bg-green-500';
         case 'R':
             return 'bg-red-500';
-        case 'I':
+        case 'E':
             return 'bg-blue-500';
         default:
             return 'bg-gray-500';

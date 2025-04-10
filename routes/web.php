@@ -91,6 +91,7 @@ Route::group(['prefix' => 'plano-contratacao-tce','middleware' => ['auth','setor
     Route::get('/validacao/{id}', [PlanoContratacaoEntidadeController::class, 'validacao'])->name('plano_contratacao_tce.validacao');
     Route::get('/show/{id}', [PlanoContratacaoEntidadeController::class, 'show'])->name('plano_contratacao_tce.show');
     Route::post('/updatestatus/{id}', [PlanoContratacaoEntidadeController::class, 'updateStatus'])->name('plano_contratacao_tce.updateStatus');
+    Route::post('/aprovaplano/{id}', [PlanoContratacaoEntidadeController::class, 'aprovaplano'])->name('plano_contratacao_tce.aprovaplano');
     Route::get('/list', [PlanoContratacaoEntidadeController::class, 'list'])->name('plano_contratacao_tce.list');
     Route::get('/years', [PlanoContratacaoEntidadeController::class, 'getYears'])->name('plano_contratacao_tce.getYears');
     Route::get('/exists', [PlanoContratacaoEntidadeController::class, 'exists'])->name('plano_contratacao_tce.exists');

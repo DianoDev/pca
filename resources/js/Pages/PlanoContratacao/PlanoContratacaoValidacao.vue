@@ -26,7 +26,7 @@
                                     </h3>
                                 </div>
                                 <!-- Botões de Validação -->
-                                <div class="flex items-center space-x-3" v-if="planoSelecionado.status !== 'A' && planoSelecionado.status !== 'R'">
+                                <div class="flex items-center space-x-3" v-if="(planoSelecionado.hierarquia_aprovacao === props.hierarquia_setor) || (planoSelecionado.hierarquia_aprovacao === '0' && props.hierarquia_setor === '2')">
                                     <button
                                         @click="updateStatus('A')"
                                         class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md flex items-center"
@@ -39,10 +39,6 @@
                                     >
                                         <i class="fa fa-times mr-2"></i> Reprovar
                                     </button>
-                                </div>
-                                <!-- Mensagem de Já Validado -->
-                                <div v-else class="text-gray-600 italic">
-                                    Plano {{ planoSelecionado.status === 'A' ? 'Aprovado' : 'Reprovado' }}
                                 </div>
                             </div>
                         </div>
@@ -148,24 +144,7 @@
                                 </div>
                                 <!-- Segunda coluna - Data e Contato -->
                                 <div class="border-t md:border-t-0 md:border-l border-gray-200 md:pl-6 pt-4 md:pt-0">
-                                    <div class="flex items-start mb-4">
-                                        <div
-                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
-                                            <i class="fa fa-calendar-alt text-gray-500"></i>
-                                        </div>
-                                        <div class="">
-                                            <h4 class="text-sm font-medium text-gray-500">Plano de Contratação do
-                                                TCE</h4>
-                                            <p class="text-base font-semibold text-gray-800">
-                                                {{
-                                                    planoSelecionado.ciclo ?
-                                                        formatDateMonthYear(planoSelecionado.ciclo.data_inicio) + ' - ' +
-                                                        formatDateMonthYear(planoSelecionado.ciclo.data_fim) :
-                                                        'Não informado'
-                                                }}
-                                            </p>
-                                        </div>
-                                    </div>
+
 
                                     <div class="flex items-start mb-4">
                                         <div
@@ -197,6 +176,25 @@
                                         </div>
                                     </div>
 
+                                    <div class="flex items-start mb-4">
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                            <i class="fa fa-calendar-alt text-gray-500"></i>
+                                        </div>
+                                        <div class="">
+                                            <h4 class="text-sm font-medium text-gray-500">Passo Atual</h4>
+                                            <p v-if="planoSelecionado.hierarquia === planoSelecionado.hierarquia_aprovacao" class="text-base s text-gray-800">
+                                               Aguardando envido do setor {{props.setor_aprovacao_atual}}
+                                            </p>
+                                            <p v-if="planoSelecionado.hierarquia_aprovacao === '-1'" class="text-base s text-green-600">
+                                                {{props.setor_aprovacao_atual}}
+                                            </p>
+                                            <p v-else class="text-base s text-gray-800">
+                                                Aguardando aprovação do setor {{props.setor_aprovacao_atual}}
+                                            </p>
+                                        </div>
+                                    </div>
+
                                     <div class="flex items-start">
                                         <div
                                             class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
@@ -204,26 +202,16 @@
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-500">Aprovação do PCA</h4>
-                                            <div v-if="planoSelecionado.status === 'P'" class="flex items-center">
-                                                <button
-                                                    @click="updateStatus('E')"
-                                                    class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md"
-                                                >
-                                                    <i class="fa fa-check mr-2"></i> Enviar
-                                                </button>
-                                            </div>
-                                            <div v-if="planoSelecionado.status === 'E' || planoSelecionado.status === 'A'" class="flex items-center">
-                                                <popup-icon
-                                                    id="novo-plano"
-                                                    title="Historico"
-                                                    size="xl"
-                                                    component="AprovacaoContratacao"
-                                                    :data="{idPlano: planoSelecionado.id}"
-                                                    variant="primary"
-                                                >
-                                                    Histórico
-                                                </popup-icon>
-                                            </div>
+                                            <popup-icon
+                                                id="novo-plano"
+                                                title="Historico"
+                                                size="xl"
+                                                component="AprovacaoContratacao"
+                                                :data="{idPlano: planoSelecionado.id}"
+                                                variant="primary"
+                                            >
+                                                Histórico
+                                            </popup-icon>
                                         </div>
                                     </div>
                                 </div>
@@ -299,6 +287,10 @@ const props = defineProps({
         default: null
     },
     hierarquia_setor: {
+        type: String,
+        default: null
+    },
+    setor_aprovacao_atual: {
         type: String,
         default: null
     },
@@ -430,7 +422,7 @@ const formatStatus = (status) => {
         case 'R':
             return 'Reprovado';
         case 'E':
-            return 'Em Análise';
+            return 'Enviado';
         default:
             return status || 'Não definido';
     }
@@ -523,17 +515,24 @@ const getDiasRestantesClass = (dias) => {
 
 // Método para atualizar o status do plano
 const updateStatus = async (status) => {
-    if (!planoSelecionado.value) return;
-
+    if (planoSelecionado.value.hierarquia_aprovacao === '0' && props.hierarquia_setor === '2') {
+        status = 'A';
+        await axios.post(`/plano-contratacao-tce/aprovaplano/${planoSelecionado.value.id}`, {
+            status: status
+        });
+        planoSelecionado.value.status = status;
+        planoSelecionado.value.hierarquia_aprovacao = -1;
+        return
+    }
     try {
         events.emit('loading', true);
 
-        await axios.post(`/plano-contratacao-setor/updatestatus/${planoSelecionado.value.id}`, {
+        await axios.post(`/plano-contratacao-tce/updatestatus/${planoSelecionado.value.id}`, {
             status: status
         });
 
         // Atualiza o status na interface
-        planoSelecionado.value.status = status;
+        planoSelecionado.value.hierarquia_aprovacao = planoSelecionado.value.hierarquia_aprovacao-1;
 
         events.emit('notification', {
             type: 'success',
@@ -555,7 +554,7 @@ const updateStatus = async (status) => {
 
 // Lifecycle hooks
 onMounted(() => {
-    console.log(props.hierarquia_setor, 'propsss');
+    console.log(props, 'propsss');
     // Já temos os dados do plano via props, só precisamos marcar como pronto
     ready.value = true;
 });

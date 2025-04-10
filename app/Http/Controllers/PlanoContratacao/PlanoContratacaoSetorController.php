@@ -165,6 +165,8 @@ class PlanoContratacaoSetorController extends Controller
             $plano = PlanoContratacao::findOrFail($id);
             $Usuario = auth()->user();
             $matricula = VwsetorGestor::query()->where('logon','=',$Usuario->name)->first();
+            $plano->hierarquia_aprovacao = $plano->hierarquia_aprovacao - 1;
+            $plano->save();
             $aprovacaoContratacao = new AprovacaoContratacao([
                 'id_plano_contratacao' => $id,
                 'codigo_setor' => $cod_setor,

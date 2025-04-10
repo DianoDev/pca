@@ -70,7 +70,7 @@
         <!-- Mensagem quando não há aprovações -->
         <div v-else class="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded text-center">
             <i class="fa fa-info-circle mr-2"></i>
-            Não há registros de aprovação para este plano.
+           O PCA não foi enviado pelo setor
         </div>
     </div>
 </template>
