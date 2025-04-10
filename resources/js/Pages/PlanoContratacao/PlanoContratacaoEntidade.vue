@@ -222,8 +222,8 @@ const formatStatus = (status) => {
             return 'Aprovado';
         case 'R':
             return 'Reprovado';
-        case 'I':
-            return 'Iniciado';
+        case 'P':
+            return 'Pendente Envio';
         default:
             return status || 'Não definido';
     }
@@ -231,7 +231,7 @@ const formatStatus = (status) => {
 
 const getStatusBadgeColor = (status) => {
     switch (status) {
-        case 'I':
+        case 'P':
             return 'bg-yellow-500';
         case 'A':
             return 'bg-green-500';
