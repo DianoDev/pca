@@ -75,8 +75,8 @@ const columns = ref([
         formatter: (value, row) => {
             let output = "";
             if (row.status !== 'A') {
-                output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Editar" data-action="popup" data-size="xl" data-component="ItemContratacaoForm" data-title="Editar Item de Contratacao" class="mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-pencil text-blue-600"></i></a>`;
-                output += `<a href="javascript:;" data-json='{"id": "${value}","tipo": "contratacao"}' data-tooltip="Remover" data-action="delete" class="action mx-0 action-delete tooltip tooltip--top"><i class="fa fa-trash mx-1 text-blue-600"></i></a>`;
+                output += `<a href="javascript:;"  style="color:#235a99" data-json='{"id": "${value}"}' data-tooltip="Editar" data-action="popup" data-size="xl" data-component="ItemContratacaoForm" data-title="Editar Item de Contratacao" class="mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-pencil text-blue-600"></i></a>`;
+                output += `<a href="javascript:;"  style="color:#235a99" data-json='{"id": "${value}","tipo": "contratacao"}' data-tooltip="Remover" data-action="delete" class="action mx-0 action-delete tooltip tooltip--top"><i class="fa fa-trash mx-1 text-blue-600"></i></a>`;
             }
             return output;
         }

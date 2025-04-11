@@ -72,7 +72,7 @@ const columnsContratacao = ref([
         contentClass: 'text-center',
         formatter: (value, row) => {
             let output = "";
-                output += `<a href="javascript:;" data-json='{"id": "${value}", "readOnly": "true"}' data-tooltip="Validar" data-action="popup" data-size="xl" data-component="ItemContratacaoForm" data-title="Editar Item de Contratacao" class="mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-file-circle-check text-blue-600"></i></a>`;
+                output += `<a  style="color:#235a99" href="javascript:;" data-json='{"id": "${value}", "readOnly": "true"}' data-tooltip="Validar" data-action="popup" data-size="xl" data-component="ItemContratacaoForm" data-title="Editar Item de Contratacao" class="mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-file-circle-check text-blue-600"></i></a>`;
             return output;
         }
     }

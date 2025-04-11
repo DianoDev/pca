@@ -43,7 +43,7 @@
             <!-- Conteúdo da página -->
             <main class="page-content">
                 <confirmation-popup></confirmation-popup>
-              <popup></popup>
+                <popup></popup>
                 <slot></slot>
             </main>
 
@@ -84,46 +84,59 @@ const props = defineProps({
 // Alternate approach: Using Inertia.js (if available)
 const page = inject('page', null);
 
+// Mapeamento correto de URLs para títulos de páginas
+// Corresponde exatamente às URLs do menu
+const urlTitles = {
+    '/dashboard': 'Painel Principal',
+    '/organograma': 'Estrutura Organizacional',
+    '/ciclo-contratacao': 'Ciclo de Contratações',
+    '/plano-contratacao-setor': 'Planos do Setor',
+    '/plano-contratacao-tce': 'Aprovação de Planos',
+    '/relatorios/diario': 'Resumo Diário',
+    '/relatorios/mensal': 'Análise Mensal',
+    '/relatorios/anual': 'Consolidado Anual'
+};
+
 // Computed property para o título da página baseado em diferentes fontes
 const pageTitle = computed(() => {
-    // Mapeamento de rotas para títulos (URLs parciais)
-    const urlTitles = {
-        '/dashboard': 'Dashboard',
-        '/organograma': 'Organograma de Setores',
-        '/ciclo-contratacao': 'Ciclo de Contratação',
-        '/plano-contratacao-setor': 'Plano de Contratação do Setor',
-        '/configuracoes/geral': 'Configurações Gerais',
-        '/configuracoes/perfil': 'Configurações de Perfil',
-        '/relatorios/diario': 'Relatório Diário',
-        '/relatorios/mensal': 'Relatório Mensal',
-        '/relatorios/anual': 'Relatório Anual'
-    };
-
     // 1. Prioridade: Props vindos do componente pai
     if (props.pageTitle && props.pageTitle !== 'Página Inicial') {
         return props.pageTitle;
     }
 
-    // 2. Se estiver usando Inertia.js
-    if (page && page.value && page.value.component) {
-        // Nome do componente no Inertia
-        const componentName = page.value.component;
-        if (componentName === 'Dashboard') return 'Dashboard';
-        if (componentName === 'Organograma') return 'Organograma de Setores';
-        if (componentName === 'Contratos') return 'Gestão de Contratos';
-    }
-
-    // 3. Usando URL da página atual
+    // 2. Usando URL da página atual
     const currentPath = window.location.pathname;
 
-    // Verifica se a URL atual contém alguma das chaves no mapeamento
+    // Verificação exata pela URL completa
+    if (urlTitles[currentPath]) {
+        return urlTitles[currentPath];
+    }
+
+    // 3. Verificação parcial (caso seja uma rota com parâmetros)
     for (const [urlPath, title] of Object.entries(urlTitles)) {
         if (currentPath.includes(urlPath)) {
             return title;
         }
     }
 
-    // 4. Fallback: extrai a última parte do caminho da URL
+    // 4. Se estiver usando Inertia.js, tenta pelo componente
+    if (page && page.value && page.value.component) {
+        const componentName = page.value.component;
+
+        // Mapeamento de componentes para títulos
+        const componentTitles = {
+            'Dashboard': 'Painel Principal',
+            'Organograma': 'Estrutura Organizacional',
+            'PlanoCotratacaoSetor': 'Planos do Setor',
+            'CicloContratacao': 'Ciclo de Contratações'
+        };
+
+        if (componentTitles[componentName]) {
+            return componentTitles[componentName];
+        }
+    }
+
+    // 5. Fallback: extrai a última parte do caminho da URL
     const pathSegments = currentPath.split('/').filter(Boolean);
     if (pathSegments.length > 0) {
         const lastSegment = pathSegments[pathSegments.length - 1];
@@ -136,8 +149,8 @@ const pageTitle = computed(() => {
         return lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1);
     }
 
-    // 5. Valor padrão
-    return 'Página Inicial';
+    // 6. Valor padrão
+    return 'Painel Principal';
 });
 
 // Métodos
@@ -177,7 +190,7 @@ const handleSubmenuClick = (submenuName) => {
 .app-layout {
     display: flex;
     min-height: 100vh;
-    background-color: #f5f5f7;
+    background-color: #fafbff;
 }
 
 .main-content {
@@ -193,8 +206,8 @@ const handleSubmenuClick = (submenuName) => {
 }
 
 .app-header {
-    background-color: #fff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: #235a99;
+    box-shadow: 0 4px 12px rgba(43, 108, 176, 0.1);
     padding: 0 1.5rem;
     height: 64px;
     display: flex;
@@ -216,8 +229,13 @@ const handleSubmenuClick = (submenuName) => {
     border: none;
     font-size: 1.25rem;
     cursor: pointer;
-    color: #6b7280;
+    color: #ffffff;
     margin-right: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-toggle-btn:hover {
+    transform: rotate(5deg) scale(1.1);
 }
 
 .collapse-btn {
@@ -225,14 +243,20 @@ const handleSubmenuClick = (submenuName) => {
     border: none;
     font-size: 1.25rem;
     cursor: pointer;
-    color: #6b7280;
+    color: #ffffff;
     margin-right: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapse-btn:hover {
+    transform: rotate(5deg) scale(1.1);
 }
 
 .page-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #111827;
+    color: #ffffff;
+    text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .user-area {
@@ -240,22 +264,42 @@ const handleSubmenuClick = (submenuName) => {
     display: flex;
     align-items: center;
     cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.12);
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.user-area:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }
 
 .user-name {
     font-size: 0.875rem;
     font-weight: 500;
     margin-right: 0.75rem;
+    color: #ffffff;
 }
 
 .user-avatar {
-    width: 2rem;
-    height: 2rem;
+    width: 2.2rem;
+    height: 2.2rem;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    color: #6b7280;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.user-area:hover .user-avatar {
+    transform: scale(1.05);
+    background-color: rgba(255, 255, 255, 0.18);
 }
 
 .page-content {
@@ -266,7 +310,7 @@ const handleSubmenuClick = (submenuName) => {
 .app-footer {
     padding: 1rem;
     text-align: center;
-    color: #6b7280;
+    color: #718096;
 }
 
 .overlay {

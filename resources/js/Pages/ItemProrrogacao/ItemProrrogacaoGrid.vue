@@ -158,7 +158,7 @@ const loadData = async () => {
                 sort: 'status',
                 nowrap: true,
                 formatter: (value) => {
-                    return `<span class="inline-flex px-2 py-1 text-xs font-medium rounded-full text-white ${getStatusBadgeColor(value)}">${formatStatusContrato(value)}</span>`;
+                    return `<span  style="color:#235a99" class="inline-flex px-2 py-1 text-xs font-medium rounded-full text-white ${getStatusBadgeColor(value)}">${formatStatusContrato(value)}</span>`;
                 }
             }
         ]);

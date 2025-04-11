@@ -208,7 +208,7 @@ const columns = ref([
         nowrap: true,
         formatter: (value, row) => {
             // Botão para ver os itens de contratação e prorrogação
-            return `<a href="/plano-contratacao-tce/validacao/${row.id}" data-json='{"id": "${value}", "setor": "${row.codigo_setor}"}' data-action="view-items" class="mx-1 tooltip tooltip--top" data-tooltip="Ver Itens"><i class="fa fa-file-circle-check text-blue-600"></i></a>`;
+            return `<a  style="color:#235a99" href="/plano-contratacao-tce/validacao/${row.id}" data-json='{"id": "${value}", "setor": "${row.codigo_setor}"}' data-action="view-items" class="mx-1 tooltip tooltip--top" data-tooltip="Ver Itens"><i class="fa fa-file-circle-check text-blue-600"></i></a>`;
         }
     }
 ]);

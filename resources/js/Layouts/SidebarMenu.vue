@@ -3,7 +3,7 @@
         <div class="sidebar-layout">
             <!-- Logo/Header -->
             <div class="sidebar-header">
-                <h2>PCA</h2>
+                <h2 class="logo-text">PCA</h2>
                 <!-- Logo/Header
                 <div v-show="!collapsed" class="logo-full">
                     <img src="/imagens/logotipo.png" class="w-60" alt="Logo">
@@ -24,7 +24,7 @@
                                 <span class="menu-icon">
                                   <i class="fa fa-home"></i>
                                 </span>
-                                <span class="menu-title">Dashboard</span>
+                                <span class="menu-title">Painel Principal</span>
                             </a>
                         </li>
 
@@ -34,7 +34,7 @@
                                 <span class="menu-icon">
                                     <i class="fa fa-sitemap"></i>
                                 </span>
-                                <span class="menu-title">Organograma</span>
+                                <span class="menu-title">Estrutura Organizacional</span>
                             </a>
                         </li>
 
@@ -43,24 +43,25 @@
                                 <span class="menu-icon">
                                     <i class="fa fa-calendar-check"></i>
                                 </span>
-                                <span class="menu-title">Ciclo Contratação</span>
+                                <span class="menu-title">Ciclo de Contratações</span>
                             </a>
                         </li>
-                        <!-- Contratos -->
+                        <!-- Planos de Contratação do Setor -->
                         <li class="menu-item" :class="{ 'active': isActive('plano-contratacao-setor') }">
                             <a href="/plano-contratacao-setor" class="menu-link">
                                 <span class="menu-icon">
                                     <i class="fa fa-file-contract"></i>
                                 </span>
-                                <span class="menu-title">Plano Contratação Setor</span>
+                                <span class="menu-title">Planos do Setor</span>
                             </a>
                         </li>
-                        <li v-if="setorInfo.hierarquia !== '4' " class="menu-item" :class="{ 'active': isActive('contratos') }">
+                        <!-- Planos de Contratação do TCE (para aprovação) -->
+                        <li v-if="setorInfo.hierarquia !== '4' " class="menu-item" :class="{ 'active': isActive('plano-contratacao-tce') }">
                             <a href="/plano-contratacao-tce" class="menu-link">
                                 <span class="menu-icon">
                                     <i class="fa fa-book-bookmark"></i>
                                 </span>
-                                <span class="menu-title">Plano Contratação TCE</span>
+                                <span class="menu-title">Aprovação de Planos</span>
                             </a>
                         </li>
 
@@ -70,7 +71,7 @@
                                 <span class="menu-icon">
                                   <i class="fa fa-chart-bar"></i>
                                 </span>
-                                <span class="menu-title">Relatórios</span>
+                                <span class="menu-title">Relatórios Gerenciais</span>
                                 <span class="menu-arrow">
                                   <i :class="['fa', openSubmenus.includes('relatorios') ? 'fa-chevron-down' : 'fa-chevron-right']"></i>
                                 </span>
@@ -79,17 +80,17 @@
                                 <ul>
                                     <li class="menu-item" :class="{ 'active': isActive('relatorio-diario') }">
                                         <a href="/relatorios/diario" class="menu-link">
-                                            <span class="menu-title">Diário</span>
+                                            <span class="menu-title">Resumo Diário</span>
                                         </a>
                                     </li>
                                     <li class="menu-item" :class="{ 'active': isActive('relatorio-mensal') }">
                                         <a href="/relatorios/mensal" class="menu-link">
-                                            <span class="menu-title">Mensal</span>
+                                            <span class="menu-title">Análise Mensal</span>
                                         </a>
                                     </li>
                                     <li class="menu-item" :class="{ 'active': isActive('relatorio-anual') }">
                                         <a href="/relatorios/anual" class="menu-link">
-                                            <span class="menu-title">Anual</span>
+                                            <span class="menu-title">Consolidado Anual</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -97,8 +98,8 @@
                         </li>
 
                         <!-- Logout (Novo item adicionado) -->
-                        <li class="menu-item mt-auto border-t border-gray-200 pt-2">
-                            <a href="#" @click.prevent="logout" class="menu-link text-red-600 hover:bg-red-50">
+                        <li class="menu-item  border-t border-slate-200 pt-2">
+                            <a href="#" @click.prevent="logout" class="menu-link logout-link">
                                 <span class="menu-icon">
                                     <i class="fa fa-sign-out-alt"></i>
                                 </span>
@@ -111,7 +112,7 @@
 
             <!-- Footer exactamente como solicitado -->
             <div class="sidebar-footer">
-                <div class="footer-content bg-gray-500 p-2 rounded">
+                <div class="footer-content bg-blue-50 p-2 rounded-lg shadow-sm">
                     <img src="/images/logo_TCE.png" class="w-16" alt="Logo Footer">
                 </div>
             </div>
@@ -154,7 +155,9 @@ onMounted(() => {
         activeItem.value = 'organograma';
     } else if (path.includes('plano-contratacao-setor')) {
         activeItem.value = 'plano-contratacao-setor';
-    }else if (path.includes('ciclo-contratacao')) {
+    } else if (path.includes('plano-contratacao-tce')) {
+        activeItem.value = 'plano-contratacao-tce';
+    } else if (path.includes('ciclo-contratacao')) {
         activeItem.value = 'ciclo-contratacao';
     } else if (path.includes('configuracoes/geral')) {
         activeItem.value = 'config-geral';
@@ -284,11 +287,12 @@ defineExpose({
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    box-shadow: 0 0 20px rgba(58, 97, 195, 0.07);
     transition: all 0.3s ease;
     z-index: 40;
     width: 260px;
+    border-right: 1px solid rgba(58, 97, 195, 0.08);
 }
 
 .sidebar.collapsed {
@@ -310,8 +314,15 @@ defineExpose({
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 70px;
-    border-bottom: 1px solid #f0f0f0;
+    height: 64px;
+    background: #235a99;
+    border-bottom: 1px solid rgba(58, 97, 195, 0.15);
+}
+
+.logo-text {
+    color: white;
+    font-weight: 600;
+    letter-spacing: 1px;
 }
 
 .sidebar-content {
@@ -323,7 +334,7 @@ defineExpose({
 
 .sidebar-footer {
     padding: 1rem;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid #e1effe;
     margin-top: auto;
 }
 
@@ -331,6 +342,7 @@ defineExpose({
     display: flex;
     justify-content: center;
     align-items: center;
+    background: linear-gradient(90deg, #60a5fa 0%, #235a99 100%);
 }
 
 /* Estilos do menu */
@@ -355,20 +367,33 @@ defineExpose({
 .menu-link {
     display: flex;
     align-items: center;
-    padding: 0.75rem 1rem;
-    color: #4b5563;
-    transition: all 0.2s;
+    padding: 0.85rem 1.2rem;
+    color: #475569;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     width: 100%;
+    border-left: 3px solid transparent;
+    margin: 2px 0;
+    border-radius: 0 6px 6px 0;
 }
 
 .menu-link:hover {
-    background-color: #f3f4f6;
+    background-color: rgba(37, 99, 235, 0.08);
+    transform: translateX(2px);
+    border-left: 3px solid #235a99;
+    color: #235a99;
 }
 
 .menu-icon {
     margin-right: 0.75rem;
     width: 1.5rem;
     text-align: center;
+    color: #64748b;
+    transition: all 0.3s;
+}
+
+.menu-link:hover .menu-icon {
+    color: #235a99;
+    transform: translateY(-2px);
 }
 
 .menu-title {
@@ -377,22 +402,34 @@ defineExpose({
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: all 0.2s;
 }
 
 .menu-arrow {
     margin-left: auto;
     font-size: 0.75rem;
+    color: #64748b;
+    transition: all 0.3s;
 }
 
 .menu-item.active > .menu-link {
-    background-color: #e0f2fe;
-    color: #0284c7;
+    background-color: rgba(37, 99, 235, 0.1);
+    color: #235a99;
+    border-left: 3px solid #235a99;
+    font-weight: 600;
+}
+
+.menu-item.active > .menu-link .menu-icon {
+    color: #235a99;
 }
 
 /* Estilos do submenu */
 .sub-menu-list {
     transition: all 0.3s ease;
     overflow: hidden;
+    background-color: rgba(37, 99, 235, 0.03);
+    margin: 0 8px;
+    border-radius: 8px;
 }
 
 .sub-menu-list ul {
@@ -403,6 +440,41 @@ defineExpose({
 
 .sub-menu-list .menu-link {
     padding-left: 3rem;
+    font-size: 0.85rem;
+    color: #475569;
+    margin: 1px 0;
+    border-radius: 4px;
+}
+
+.sub-menu-list .menu-link:hover {
+    color: #235a99;
+    background-color: rgba(37, 99, 235, 0.08);
+}
+
+.sub-menu-list .menu-item.active > .menu-link {
+    background-color: rgba(37, 99, 235, 0.1);
+    border-left: 3px solid #235a99;
+    color: #235a99;
+}
+
+/* Logout item styling */
+.logout-link {
+    color: #475569;
+    margin-top: 8px;
+}
+
+.logout-link:hover {
+    background-color: rgba(239, 68, 68, 0.08);
+    border-left: 3px solid #ef4444;
+    color: #ef4444;
+}
+
+.logout-link .menu-icon {
+    color: #64748b;
+}
+
+.logout-link:hover .menu-icon {
+    color: #ef4444;
 }
 
 /* Estilos para menu responsivo */
@@ -429,6 +501,10 @@ defineExpose({
 .sidebar.collapsed .menu-icon {
     margin-right: 0;
     width: 100%;
+}
+
+.sidebar.collapsed .menu-link:hover {
+    transform: translateX(0);
 }
 
 /* Garantir que o footer fique no final do menu */

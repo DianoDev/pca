@@ -34,9 +34,8 @@ const open = () => {
     });
 };
 
-// Computed styles based on variant
 const variantClasses = {
-    primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500',
+    primary: 'bg-[#235a99] hover:bg-[#1d4b80] text-white focus:ring-[#2d6ab8]',
     secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500',
     success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
     danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',

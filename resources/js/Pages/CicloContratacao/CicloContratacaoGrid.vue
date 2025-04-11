@@ -112,8 +112,8 @@ const columns = ref([
         contentClass: 'text-center',
         formatter: (value, row) => {
             let output = "";
-            output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Editar" data-action="popup" data-size="xl" data-component="CicloContratacaoForm" data-title="Editar Ciclo Contratação" class=" mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-pencil"></i></a>`;
-            output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Remover" data-action="delete" class="action mx-0 action-delete tooltip tooltip--top"><i class="fa fa-trash mx-1"></i></a>`;
+            output += `<a href="javascript:;" data-json='{"id": "${value}"}' data-tooltip="Editar" data-action="popup" data-size="xl" data-component="CicloContratacaoForm" data-title="Editar Ciclo Contratação" style="color:#235a99" class="mx-1 action text-align-center tooltip tooltip--top"><i class="fa fa-pencil"></i></a>`;
+            output += `<a href="javascript:;" data-json='{"id": "${value}"}'  style="color:#235a99" data-tooltip="Remover" data-action="delete" class="action mx-0 action-delete tooltip tooltip--top"><i class="fa fa-trash mx-1"></i></a>`;
             return output;
         }
     }
