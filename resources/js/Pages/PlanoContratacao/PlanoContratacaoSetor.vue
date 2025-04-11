@@ -163,24 +163,6 @@
                                 </div>
                                 <!-- Segunda coluna - Prazos -->
                                 <div class="border-t md:border-t-0 md:border-l border-gray-200 md:pl-6 pt-4 md:pt-0">
-                                    <div class="flex items-start mb-4">
-                                        <div
-                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
-                                            <i class="fa fa-calendar-alt text-gray-500"></i>
-                                        </div>
-                                        <div class="">
-                                            <h4 class="text-sm font-medium text-gray-500">Plano de Contratação do
-                                                TCE</h4>
-                                            <p class="text-base font-semibold text-gray-800">
-                                                {{
-                                                    hasPlanForSelectedYear.ciclo ?
-                                                        formatDateMonthYear(hasPlanForSelectedYear.ciclo.data_inicio) + ' - ' +
-                                                        formatDateMonthYear(hasPlanForSelectedYear.ciclo.data_fim) :
-                                                        'Não informado'
-                                                }}
-                                            </p>
-                                        </div>
-                                    </div>
 
                                     <div class="flex items-start mb-4">
                                         <div
@@ -209,6 +191,24 @@
                                                     }}
                                                 </p>
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start mb-4">
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-3">
+                                            <i class="fa fa-calendar-alt text-gray-500"></i>
+                                        </div>
+                                        <div class="">
+                                            <h4 class="text-sm font-medium text-gray-500">Passo Atual</h4>
+                                            <p v-if="hasPlanForSelectedYear.hierarquia === hasPlanForSelectedYear.hierarquia_aprovacao" class="text-base s text-gray-800">
+                                                Aguardando envido do setor {{setor_aprovacao_atual}}
+                                            </p>
+                                            <p v-if="hasPlanForSelectedYear.hierarquia_aprovacao === '-1'" class="text-base s text-green-600">
+                                                {{setor_aprovacao_atual}}
+                                            </p>
+                                            <p v-else class="text-base s text-gray-800">
+                                                Aguardando aprovação do setor {{setor_aprovacao_atual}}
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="flex items-start">
@@ -317,6 +317,7 @@ import PopupIcon from "@/Components/PopupIcon.vue";
 
 const valor_contratacao = ref(null);
 const valor_prorrogacao = ref(null);
+const setor_aprovacao_atual = ref(null);
 const {hierarquia} = usePage().props;
 
 const events = inject('events');
@@ -381,42 +382,6 @@ const updateStatus = async (status) => {
     }
 };
 
-// Formatar datas
-const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-
-    // Remove a parte do horário se existir
-    dateStr = dateStr.split(' ')[0];
-
-    // Se o formato for YYYY-MM-DD, converte para DD/MM/YYYY
-    if (dateStr.includes('-')) {
-        const parts = dateStr.split('-');
-        if (parts.length === 3) {
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
-        }
-    }
-
-    return dateStr;
-};
-
-// Formatar data para mostrar apenas mês e ano
-const formatDateMonthYear = (dateStr) => {
-    if (!dateStr) return '';
-
-    // Remove a parte do horário se existir
-    dateStr = dateStr.split(' ')[0];
-
-    // Se o formato for YYYY-MM-DD, extrai mês e ano
-    if (dateStr.includes('-')) {
-        const parts = dateStr.split('-');
-        if (parts.length === 3) {
-            const mes = getNomeMes(parseInt(parts[1]));
-            return `${mes}/${parts[0]}`;
-        }
-    }
-
-    return dateStr;
-};
 
 // Função para formatar a data limite de cadastro
 const formatDataLimite = (dia, mes) => {
@@ -437,23 +402,6 @@ const getNomeMes = (numMes) => {
     return meses[numMes - 1] || '';
 };
 
-// Status do ciclo
-const formatCicloStatus = (status) => {
-    switch (status) {
-        case 'A':
-            return 'Ativo';
-        case 'F':
-            return 'Finalizado';
-        case 'C':
-            return 'Cancelado';
-        case 'I':
-            return 'Iniciado';
-        case 'E':
-            return 'Em andamento';
-        default:
-            return status || 'Não definido';
-    }
-};
 
 // Calcular dias restantes com base no ciclo_hierarquia
 const diasRestantesCadastro = computed(() => {
@@ -624,9 +572,11 @@ const checkPlanExistence = async () => {
     try {
         events.emit('loading', true);
         const response = await axios.get(`/plano-contratacao-setor/exists?exercicio=${selectedYear.value}`);
+        console.log(response.data,'repomsesesese')
         hasPlanForSelectedYear.value = response.data.exists;
         valor_contratacao.value = response.data.valor_contratacao;
         valor_prorrogacao.value = response.data.valor_prorrogacao;
+        setor_aprovacao_atual.value = response.data.setor_aprovacao_atual;
     } catch (error) {
         console.error('Erro ao verificar existência do plano:', error);
         hasPlanForSelectedYear.value = false;

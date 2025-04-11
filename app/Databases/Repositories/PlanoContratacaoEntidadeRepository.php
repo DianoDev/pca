@@ -50,15 +50,27 @@ class PlanoContratacaoEntidadeRepository implements PlanoContratacaoEntidadeCont
     public function paginate(array $pagination = [], array $columns = ['*']): LengthAwarePaginator
     {
         $cod_setor = Session::get('setor');
-
+        $setor_info = Session::get('setor_info');
+        $is_hierarquia_1 = isset($setor_info) && $setor_info->hierarquia === "2";
         // Buscar todos os códigos de setores descendentes (recursive function)
         $setoresCodigos = $this->getDescendantSectors($cod_setor);
         // Não incluímos o próprio setor na lista
 
         // Construir a query usando a lista de códigos
-        $query = PlanoContratacao::query()
-            ->whereIn('plano_contratacao.codigo_setor', $setoresCodigos)
-            ->leftJoin('vw_setor_gestor', 'vw_setor_gestor.codigo_setor', '=', 'plano_contratacao.codigo_setor')
+        $query = PlanoContratacao::query();
+
+        // Se o setor for de hierarquia 1, então também incluir planos com hierarquia_aprovacao = 0
+        if ($is_hierarquia_1) {
+            $query->where(function($q) use ($setoresCodigos) {
+                $q->whereIn('plano_contratacao.codigo_setor', $setoresCodigos)
+                    ->orWhere('plano_contratacao.hierarquia_aprovacao', 0);
+            });
+        } else {
+            // Caso contrário, apenas os planos dos setores descendentes
+            $query->whereIn('plano_contratacao.codigo_setor', $setoresCodigos);
+        }
+
+        $query->leftJoin('vw_setor_gestor', 'vw_setor_gestor.codigo_setor', '=', 'plano_contratacao.codigo_setor')
             ->leftJoin('publico.vw_sigp_funcionario', 'publico.vw_sigp_funcionario.numero_matricula', '=', 'plano_contratacao.numero_matricula_gestor_criador')
             ->select([
                 'plano_contratacao.id',
@@ -69,6 +81,7 @@ class PlanoContratacaoEntidadeRepository implements PlanoContratacaoEntidadeCont
                 'plano_contratacao.email',
                 'plano_contratacao.telefone',
                 'plano_contratacao.numero_matricula_gestor_criador',
+                'plano_contratacao.hierarquia_aprovacao',
                 'publico.vw_sigp_funcionario.nome_funcionario',
                 'vw_setor_gestor.nome_setor_formatado',
             ]);
@@ -110,7 +123,6 @@ class PlanoContratacaoEntidadeRepository implements PlanoContratacaoEntidadeCont
         $query->orderBy($pagination['sort'] ?? 'codigo_setor', $pagination['sort_direction'] ?? 'asc');
         return $query->paginate($pagination['per_page'] ?? 10, $columns, 'page', $pagination['current_page'] ?? 1);
     }
-
     /**
      * Função recursiva para obter todos os setores descendentes
      * @param int $sectorId

@@ -193,6 +193,22 @@ class PlanoContratacaoEntidadeController extends Controller
             $plano->status  = $status;
             $plano->save();
 
+            // Recuperar todos os itens que não estão reprovados
+            $itens_contratacao = ItemContratacao::query()->where('id_plano_contratacao', $id)->where('status','!=','R')->get();
+            $itens_prorrogacao = ItemProrrogacao::query()->where('id_plano_contratacao', $id)->where('status','!=','R')->get();
+
+            // Atualizar o status de todos os itens de contratação
+            foreach ($itens_contratacao as $item) {
+                $item->status = $status;
+                $item->save();
+            }
+
+            // Atualizar o status de todos os itens de prorrogação
+            foreach ($itens_prorrogacao as $item) {
+                $item->status = $status;
+                $item->save();
+            }
+
             $aprovacaoContratacao = new AprovacaoContratacao([
                 'id_plano_contratacao' => $id,
                 'codigo_setor' => $cod_setor,

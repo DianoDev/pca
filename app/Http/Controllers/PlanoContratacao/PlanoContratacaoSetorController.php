@@ -8,7 +8,9 @@ use App\Databases\Models\AprovacaoContratacao;
 use App\Databases\Models\CicloHierarquia;
 use App\Databases\Models\ItemContratacao;
 use App\Databases\Models\ItemProrrogacao;
+use App\Databases\Models\SetorPCA;
 use App\Databases\Models\VwSetorGestor;
+use App\Databases\Models\VwSigpSetorSecorp;
 use App\Http\Requests\UsuarioSetorRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -233,6 +235,29 @@ class PlanoContratacaoSetorController extends Controller
         $item_prorrogacao = 0;
         $item_contratacao = 0;
 
+        $setor_info = session()->get('setor_info');
+        if($setor_info->hierarquia === $planoContratacao->hierarquia_aprovacao){
+            $setor_aprovacao = VwSigpSetorSecorp::query()->where('codigo_setor','=',$setor_info->codigo_setor)->first();
+            $setor_aprovacao = $setor_aprovacao->nome_setor;
+        }
+        elseif($planoContratacao->hierarquia_aprovacao === "4"){
+            $setor = SetorPCA::query()->where('codigo_setor', $planoContratacao->codigo_setor)->first();
+            $setor_aprovacao = VwSigpSetorSecorp::query()->where('codigo_setor','=',$setor->codigo_setor)->first();
+            $setor_aprovacao = $setor_aprovacao->nome_setor;
+        }
+        elseif($planoContratacao->hierarquia_aprovacao === "0"){
+            $setor = SetorPCA::query()->where('hierarquia', '=','2')->first();
+            $setor_aprovacao = VwSigpSetorSecorp::query()->where('codigo_setor','=',$setor->codigo_setor)->first();
+            $setor_aprovacao = $setor_aprovacao->nome_setor;
+        }
+        elseif($planoContratacao->hierarquia_aprovacao === "-1"){
+            $setor_aprovacao = 'Plano Aprovado';
+        }
+        else{
+            $setor = SetorPCA::query()->where('hierarquia', $planoContratacao->hierarquia_aprovacao)->first();
+            $setor_aprovacao = VwSigpSetorSecorp::query()->where('codigo_setor','=',$setor->codigo_setor)->first();
+            $setor_aprovacao = $setor_aprovacao->nome_setor;
+        }
         if ($planoContratacao) {
             // Buscar dados da hierarquia
             $cicloHierarquia = CicloHierarquia::query()
@@ -256,6 +281,7 @@ class PlanoContratacaoSetorController extends Controller
 
         return response()->json([
             'exists' => $planoContratacao,
+            'setor_aprovacao_atual' => $setor_aprovacao,
             'valor_prorrogacao' => $item_prorrogacao,
             'valor_contratacao' => $item_contratacao
         ]);
