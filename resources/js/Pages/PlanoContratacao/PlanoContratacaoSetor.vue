@@ -570,6 +570,7 @@ const fetchYearsWithPlans = async () => {
 // Check if the selected year has a plan
 const checkPlanExistence = async () => {
     try {
+        ready.value = false;
         events.emit('loading', true);
         const response = await axios.get(`/plano-contratacao-setor/exists?exercicio=${selectedYear.value}`);
         console.log(response.data,'repomsesesese')
@@ -577,6 +578,7 @@ const checkPlanExistence = async () => {
         valor_contratacao.value = response.data.valor_contratacao;
         valor_prorrogacao.value = response.data.valor_prorrogacao;
         setor_aprovacao_atual.value = response.data.setor_aprovacao_atual;
+        ready.value = true;
     } catch (error) {
         console.error('Erro ao verificar existência do plano:', error);
         hasPlanForSelectedYear.value = false;
