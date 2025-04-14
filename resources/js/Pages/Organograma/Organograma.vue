@@ -1,7 +1,7 @@
 <template>
     <AppLayout>
-        <div class=" container mx-auto">
-            <div class="bg-white rounded-lg shadow ">
+        <div class=" container contpage">
+            <div class=" ">
                 <!-- Árvore de Setores -->
                 <div class="">
                     <div v-if="arvoreSetores.length === 0" class="text-center py-8">
@@ -39,12 +39,6 @@
                                                         class="org-tree-btn org-tree-btn-add p-2"
                                                         title="Adicionar subsetor">
                                                         <i class="fa fa-plus"></i>
-                                                    </button>
-                                                    <button
-                                                        @click="confirmarRemoverSetor(setor)"
-                                                        class="org-tree-btn org-tree-btn-remove p-2"
-                                                        title="Remover setor">
-                                                        <i class="fa fa-remove"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -465,6 +459,10 @@ watch(mostrarBuscaSetorRaiz, (newValue) => {
 </script>
 
 <style scoped>
+.contpage{
+    max-width:4000px !important;
+}
+
 .organograma {
     padding: 1rem;
     overflow-x: auto;
@@ -476,7 +474,6 @@ watch(mostrarBuscaSetorRaiz, (newValue) => {
 }
 
 .org-tree-container {
-    padding: 20px;
     min-width: max-content;
 }
 
@@ -645,9 +642,6 @@ watch(mostrarBuscaSetorRaiz, (newValue) => {
 
 /* Adaptação para organogramas mais complexos */
 @media (min-width: 1024px) {
-    .org-tree-container {
-        padding: 40px;
-    }
 
     .org-tree-node {
         min-width: 250px;
