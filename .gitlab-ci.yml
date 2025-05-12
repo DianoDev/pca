@@ -1,0 +1,162 @@
+
+#Declaracao dos estagios
+stages:
+  - build
+  - deploy
+
+# Definindo as branches que acionam a pipeline
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop"'
+  auto_cancel:
+    on_job_failure: all
+
+.registry_login: &registry_login |
+  # Realiza login no registro do Docker usando as credenciais do GitLab
+  echo $CI_REGISTRY_PASSWORD | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+
+php-dependency:
+  stage: build
+  tags:
+    - develop
+  image: composer/composer:2.8.3
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-composer
+    paths:
+      - vendor/
+  script:
+    - composer install --prefer-dist --no-ansi --no-interaction --no-progress --no-scripts --ignore-platform-req=ext-oci8
+  artifacts:
+    expire_in: 1 month
+    paths:
+      - vendor/
+
+compile_assets:
+  stage: build
+  tags:
+    - develop
+  image: node:20.18.0-alpine
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-npm
+    paths:
+      - node_modules/
+  before_script:
+    - if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then
+      cp .env.prod.example .env;
+      elif [[ "$CI_COMMIT_BRANCH" == "develop" ]]; then
+      cp .env.dev.example .env;
+      fi
+  script:
+    - npm install
+    - npm run build
+  artifacts:
+    expire_in: 1 month
+    paths:
+      - public/build/
+      - public/build/manifest.json
+
+#Job "build_image" que executa o estagio "build"
+build_image-fpm:
+  needs:
+    - php-dependency
+    - compile_assets
+  #A tag "develop" significa que esse job será executado pelo runner que tem essa tag.
+  tags:
+    - develop
+  stage: build
+  before_script:
+    # Define a tag da imagem e o ambiente de build
+    - export IMAGE_TAG=$CI_PIPELINE_ID
+    - if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then export BUILD_ENV=prod; else export BUILD_ENV=dev; fi
+    # Copia os certificados necessários
+    - cp /opt/cert/* /etc/ssl/certs/
+  script:
+    - echo "Building..."
+    # Realiza login no registro do Docker
+    - *registry_login
+    # Constrói a imagem Docker para PHP-FPM
+    - docker image build . --no-cache -t $CI_REGISTRY_IMAGE:php-fpm-$BUILD_ENV-latest -f .docker/php-fpm/Dockerfile
+    # Renomeia a imagem para envio ao registro
+    - docker image tag $CI_REGISTRY_IMAGE:php-fpm-$BUILD_ENV-latest $CI_REGISTRY_IMAGE:php-fpm-$BUILD_ENV-$IMAGE_TAG
+    # Envia a imagem para o registro do GitLab
+    - docker image push $CI_REGISTRY_IMAGE:php-fpm-$BUILD_ENV-latest
+    - docker image push $CI_REGISTRY_IMAGE:php-fpm-$BUILD_ENV-$IMAGE_TAG
+    # Faz logout do registro do Docker
+    - docker logout $CI_REGISTRY
+    # Remove imagens residuais para liberar espaço
+    - docker image ls | grep "$CI_REGISTRY_IMAGE:php-fpm-$BUILD_ENV" | awk '{print $3}' | xargs -I {} docker image rm -f {} || true
+
+# Job "build-image-nginx" que executa o estágio "build" para a imagem NGINX
+build-image-nginx:
+  needs:
+    - compile_assets
+  tags:
+    - develop
+  stage: build
+  before_script:
+    # Define a tag da imagem e o ambiente de build
+    - export IMAGE_TAG=$CI_PIPELINE_ID
+    - if [[ "$CI_COMMIT_BRANCH" == "master" ]]; then export BUILD_ENV=prod; else export BUILD_ENV=dev; fi
+    # Copia os certificados necessários
+    - cp /opt/cert/* /etc/ssl/certs/
+  script:
+    - echo "Building..."
+    # Realiza login no registro do Docker
+    - *registry_login
+    # Constrói a imagem Docker para NGINX
+    - docker image build . --no-cache -t $CI_REGISTRY_IMAGE:nginx-$BUILD_ENV-latest -f .docker/nginx/Dockerfile
+    # Renomeia a imagem para envio ao registro
+    - docker image tag $CI_REGISTRY_IMAGE:nginx-$BUILD_ENV-latest $CI_REGISTRY_IMAGE:nginx-$BUILD_ENV-$IMAGE_TAG
+    # Envia a imagem para o registro do GitLab
+    - docker image push $CI_REGISTRY_IMAGE:nginx-$BUILD_ENV-latest
+    - docker image push $CI_REGISTRY_IMAGE:nginx-$BUILD_ENV-$IMAGE_TAG
+    # Faz logout do registro do Docker
+    - docker logout $CI_REGISTRY
+    # Remove imagens residuais para liberar espaço
+    - docker image ls | grep "$CI_REGISTRY_IMAGE:nginx-$BUILD_ENV" | awk '{print $3}' | xargs -I {} docker image rm -f {} || true
+
+deploy_down_dev:
+  tags:
+    - develop
+  stage: deploy
+  before_script:
+    - export BUILD_ENV=dev
+    - if [ ! -f "/opt/projetos/plano-contratacao-anual/.env.$BUILD_ENV" ]; then cp .env.$BUILD_ENV.example /opt/projetos/plano-contratacao-anual/.env.$BUILD_ENV; fi
+  script:
+    #Faz o login no Registry do GitLab
+    - *registry_login
+    - docker image pull $CI_REGISTRY_IMAGE:php-fpm-$BUILD_ENV-${IMAGE_TAG:-latest}
+    - docker image pull $CI_REGISTRY_IMAGE:nginx-$BUILD_ENV-${IMAGE_TAG:-latest}
+    #Faz o logout do Registry do GitLab
+    - docker logout $CI_REGISTRY
+    #Para o serviço
+    - echo "Parando o container do serviço..."
+    - docker compose -f "compose-dev.yml" down
+  only:
+    - develop
+
+#Job "deploy" que executa o estagio "deploy"
+deploy_up_dev:
+  #A tag "develop" significa que esse job sera executado pelo runner que tem essa tag.
+  tags:
+    - develop
+  needs:
+    - deploy_down_dev
+  stage: deploy
+  before_script:
+    - export BUILD_ENV=dev
+    - cp .env.$BUILD_ENV.example /opt/projetos/plano-contratacao-anual/.env.$BUILD_ENV
+  script:
+    - echo "Reiniciando o container do serviço..."
+    #Faz o login no Registry do GitLab
+    - *registry_login
+    - docker compose -f compose-dev.yml up -d
+    #Faz o logout do Registry do GitLab
+    - docker logout $CI_REGISTRY
+    #Remove todas as imagens do servidor
+    - docker image ls | grep "$CI_REGISTRY_IMAGE" | awk '{print $3}' | xargs -I {} docker image rm -f {} || true
+  environment:
+    name: Plano de Contratacao Anual Desenvolvimento
+    url: https://d-planocontratacao.tce.mt.gov.br
+  only:
+    - develop

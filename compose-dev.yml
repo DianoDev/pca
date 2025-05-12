@@ -1,30 +1,30 @@
 services:
   fpm:
-    container_name: pca-fpm
+    container_name: planocontratacao-fpm
     image: $CI_REGISTRY_IMAGE:php-fpm-${IMAGE_TAG:-latest}
     restart: unless-stopped
     env_file:
-      - /opt/projetos/pca/.env
-      # - /opt/projetos/pca/.env.dev
+      - /opt/projetos/planocontratacao/.env
+      - /opt/projetos/planocontratacao/.env.dev
     networks:
-      - traefik-pca
+      - traefik-planocontratacao
 
   nginx:
-    container_name: pca-nginx
+    container_name: planocontratacao-nginx
     image: $CI_REGISTRY_IMAGE:nginx-${IMAGE_TAG:-latest}
     restart: unless-stopped
     networks:
-      - traefik-pca
+      - traefik-planocontratacao
     labels:
       - "traefik.enable=true"
 
-      - "traefik.http.routers.d-pca-http.rule=Host(`d-congex.tce.mt.gov.br`)"
-      - "traefik.http.routers.d-pca-http.entrypoints=http"
-      - "traefik.http.routers.d-pca-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.d-planocontratacao-http.rule=Host(`d-planocontratacao.tce.mt.gov.br`)"
+      - "traefik.http.routers.d-planocontratacao-http.entrypoints=http"
+      - "traefik.http.routers.d-planocontratacao-http.middlewares=redirect-to-https"
 
-      - "traefik.http.routers.d-pca-https.rule=Host(`d-congex.tce.mt.gov.br`)"
-      - "traefik.http.routers.d-pca-https.entrypoints=https"
-      - "traefik.http.routers.d-pca-https.tls=true"
+      - "traefik.http.routers.d-planocontratacao-https.rule=Host(`d-planocontratacao.tce.mt.gov.br`)"
+      - "traefik.http.routers.d-planocontratacao-https.entrypoints=https"
+      - "traefik.http.routers.d-planocontratacao-https.tls=true"
 
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
@@ -33,5 +33,5 @@ services:
         condition: service_started
 
 networks:
-  traefik-pca:
+  traefik-planocontratacao:
     external: true
